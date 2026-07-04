@@ -43,10 +43,14 @@ body::before{
   position:fixed; inset:0;
   pointer-events:none;
   background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E"),
     radial-gradient(circle at 20% 30%, rgba(34,29,22,0.025), transparent 60%),
     radial-gradient(circle at 80% 70%, rgba(34,29,22,0.02), transparent 55%);
   z-index:0;
 }
+
+::selection{background:var(--gold-glow); color:var(--ink);}
+:focus-visible{outline:2px solid var(--gold-deep); outline-offset:2px; border-radius:4px;}
 
 .wrap{max-width:1080px; margin:0 auto; padding:0 32px; position:relative; z-index:1;}
 
@@ -116,6 +120,29 @@ header.hero{
   padding:120px 0 80px;
   position:relative;
   border-bottom:1px solid var(--rule);
+  overflow:hidden;
+}
+.hero-ring{
+  position:absolute; right:-190px; top:50%;
+  width:620px; height:620px;
+  margin-top:-310px;
+  pointer-events:none;
+  z-index:0;
+}
+.hero-ring svg{width:100%; height:100%; animation:ringSpin 110s linear infinite;}
+@keyframes ringSpin{to{transform:rotate(360deg);}}
+.hero .wrap{position:relative; z-index:1;}
+.hero-stats{
+  display:flex; gap:38px; margin-top:44px; flex-wrap:wrap;
+}
+.hero-stats .stat{display:flex; flex-direction:column; gap:2px;}
+.hero-stats .n{
+  font-family:var(--serif-display); font-weight:600; font-size:30px; line-height:1;
+  color:var(--ink);
+}
+.hero-stats .l{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--ink-soft);
 }
 .hero-kicker{
   font-family:var(--mono); font-size:12px; letter-spacing:0.2em;
@@ -242,6 +269,28 @@ section{padding:100px 0; border-bottom:1px solid var(--rule);}
 .map-bars .bar.r i.on{background:var(--ink);}
 .map-bars .bar.a i.on{background:var(--cyan);}
 .map-bars .bar.l i.on{background:var(--gold);}
+
+/* ================= PHASE CONTROLS ================= */
+.phase-controls{
+  display:flex; justify-content:space-between; align-items:center;
+  gap:16px; flex-wrap:wrap; margin-bottom:26px;
+}
+.filter-row{display:flex; gap:8px; flex-wrap:wrap;}
+.fbtn{
+  font-family:var(--mono); font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+  padding:9px 16px; border-radius:999px;
+  border:1px solid var(--rule); background:transparent; color:var(--ink-soft);
+  cursor:pointer;
+  transition:border-color .2s, background .2s, color .2s, transform .15s;
+}
+.fbtn:hover{border-color:var(--ink); color:var(--ink); transform:translateY(-1px);}
+.fbtn.on{background:var(--ink); color:var(--paper); border-color:var(--ink);}
+.fbtn.on:hover{color:var(--paper);}
+.phase-card.filtered-out{display:none;}
+.map-block.dimmed{opacity:0.25; filter:grayscale(0.6);}
+.filter-count{
+  font-family:var(--mono); font-size:11px; color:var(--ink-soft); letter-spacing:0.05em;
+}
 
 /* ================= PHASE CARDS ================= */
 .phase-list{display:flex; flex-direction:column; gap:16px;}
@@ -438,6 +487,34 @@ section{padding:100px 0; border-bottom:1px solid var(--rule);}
   opacity:0.7;
 }
 
+/* ================= BOOKSHELF ================= */
+.shelf-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+.shelf-card{
+  position:relative; display:block;
+  border:1px solid var(--rule); background:var(--paper2);
+  border-radius:12px; padding:22px 20px 18px;
+  text-decoration:none; color:inherit;
+  transition:transform .2s, border-color .25s, box-shadow .25s;
+}
+.shelf-card:hover{
+  transform:translateY(-3px);
+  border-color:var(--gold);
+  box-shadow:0 10px 22px -12px rgba(122,89,26,0.45);
+}
+.shelf-card .ph{
+  position:absolute; top:16px; right:18px;
+  font-family:var(--mono); font-size:9.5px; letter-spacing:0.08em;
+  color:var(--gold-deep); text-transform:uppercase;
+}
+.shelf-card .st{font-family:var(--serif-display); font-weight:600; font-size:18px; padding-right:70px;}
+.shelf-card .sd{font-size:13.8px; color:var(--ink-soft); margin-top:7px; line-height:1.5;}
+.shelf-card .su{
+  display:block; margin-top:14px;
+  font-family:var(--mono); font-size:10px; letter-spacing:0.06em;
+  color:var(--gold-deep);
+}
+.shelf-card .su::after{content:" ↗";}
+
 /* ================= CLOSING ================= */
 footer.closing{
   padding:120px 0 100px;
@@ -552,15 +629,45 @@ footer.closing .final{
   .hero-anim{animation:none; opacity:1; transform:none;}
 }
 
+.back-top{
+  display:inline-block; margin-top:48px;
+  font-family:var(--mono); font-size:11px; letter-spacing:0.1em; text-transform:uppercase;
+  color:var(--ink-soft); text-decoration:none;
+  border:1px solid var(--rule); border-radius:999px; padding:10px 20px;
+  transition:border-color .2s, color .2s, transform .15s;
+}
+.back-top:hover{border-color:var(--ink); color:var(--ink); transform:translateY(-2px);}
+
+@media (max-width:1100px){
+  .hero-ring{display:none;}
+}
 @media (max-width:860px){
   .three-col{grid-template-columns:1fr;}
   .model-grid{grid-template-columns:1fr;}
   .orch-grid{grid-template-columns:1fr;}
   .contested-grid{grid-template-columns:1fr;}
   .floor-grid{grid-template-columns:1fr;}
+  .shelf-grid{grid-template-columns:1fr 1fr;}
   .phase-head{flex-wrap:wrap;}
   .phase-head .mini-load{width:100%; justify-content:flex-start; margin-top:12px;}
   .map-strip{grid-template-columns:repeat(5, minmax(90px,1fr));}
+}
+@media (max-width:640px){
+  #lensToggle{top:auto; bottom:18px; right:16px; font-size:11px; padding:10px 14px;}
+  .shelf-grid{grid-template-columns:1fr;}
+  .hero-stats{gap:26px;}
+  .phase-controls{flex-direction:column; align-items:flex-start;}
+}
+
+@media print{
+  #lensToggle, #progress, .scroll-cue, .chevron, .col-more-cue,
+  .phase-controls, .curve-title .hint, .back-top{display:none !important;}
+  .phase-body, .col-detail{max-height:none !important;}
+  .phase-card.filtered-out{display:block;}
+  .reveal{opacity:1 !important; transform:none !important;}
+  section, header.hero{padding:36px 0; min-height:0;}
+  body{font-size:13px;}
+  .shelf-card .su::after{content:"";}
 }
 </style>
 </head>
@@ -571,6 +678,14 @@ footer.closing .final{
 <button id="lensToggle" onclick="toggleLens()"><span class="dot"></span><span id="lensLabel">Library lens: off</span></button>
 
 <header class="hero">
+  <div class="hero-ring hero-anim" style="animation-delay:.85s" aria-hidden="true">
+    <svg viewBox="0 0 620 620">
+      <circle cx="310" cy="310" r="280" fill="none" stroke="var(--rule)" stroke-width="1.2"/>
+      <circle cx="310" cy="310" r="280" fill="none" stroke="var(--gold)" stroke-width="9" stroke-linecap="round" stroke-dasharray="3 172.9" opacity="0.55"/>
+      <circle cx="310" cy="310" r="236" fill="none" stroke="var(--rule)" stroke-width="1" stroke-dasharray="2 7"/>
+      <circle cx="310" cy="310" r="192" fill="none" stroke="var(--cyan)" stroke-width="1.4" stroke-dasharray="60 1146" stroke-linecap="round" opacity="0.5"/>
+    </svg>
+  </div>
   <div class="wrap">
     <div class="hero-kicker hero-anim" style="animation-delay:.05s">A map of scientific research, phase by phase</div>
     <h1 class="title hero-anim" style="animation-delay:.15s">The Research<br>Lifecycle</h1>
@@ -580,6 +695,13 @@ footer.closing .final{
       <div class="entity-chip researcher" data-series="r"><span class="swatch"></span><b>Researcher</b><span class="tag">human · the constant</span></div>
       <div class="entity-chip ai" data-series="a"><span class="swatch"></span><b>Agentic AI</b><span class="tag">velocity & automation</span></div>
       <div class="entity-chip library" data-series="l"><span class="swatch"></span><b>Library</b><span class="tag">trust · access · permanence</span></div>
+    </div>
+    <div class="hero-stats hero-anim" style="animation-delay:.8s">
+      <div class="stat"><span class="n">10</span><span class="l">phases</span></div>
+      <div class="stat"><span class="n">3</span><span class="l">lanes of support</span></div>
+      <div class="stat"><span class="n">4</span><span class="l">contested zones</span></div>
+      <div class="stat"><span class="n">4</span><span class="l">library-only floors</span></div>
+      <div class="stat"><span class="n">1</span><span class="l">cycle — it loops</span></div>
     </div>
   </div>
   <div class="scroll-cue">Scroll</div>
@@ -642,6 +764,15 @@ footer.closing .final{
       <div class="eyebrow">Phase by phase</div>
       <h2>Support load, lead, and the honest tension</h2>
       <p class="lede">Each phase: what the researcher owns, what the agent reliably does today (and what's emerging), and where the library leads. Toggle the Library Lens above to see only the institutional layer.</p>
+    </div>
+    <div class="phase-controls">
+      <div class="filter-row" id="filterRow" role="group" aria-label="Filter phases">
+        <button class="fbtn on" data-f="all">All 10</button>
+        <button class="fbtn" data-f="lib">Library-led</button>
+        <button class="fbtn" data-f="ai">AI-led</button>
+        <button class="fbtn" data-f="contested">Contested</button>
+      </div>
+      <button class="fbtn" id="expandAll">Expand all</button>
     </div>
     <div class="phase-list" id="phaseList"></div>
   </div>
@@ -763,6 +894,72 @@ footer.closing .final{
   </div>
 </section>
 
+<section id="shelf">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The field guide</div>
+      <h2>Nine resources worth bookmarking</h2>
+      <p class="lede">Every tool and standard named in the phases above, in one place. Each card notes the phase where it earns its keep.</p>
+    </div>
+    <div class="shelf-grid">
+      <a class="shelf-card" href="https://www.prisma-statement.org" target="_blank" rel="noopener">
+        <span class="ph">Phase 02</span>
+        <div class="st">PRISMA</div>
+        <p class="sd">The reporting standard for systematic reviews — the auditable search method reviewers expect.</p>
+        <span class="su">prisma-statement.org</span>
+      </a>
+      <a class="shelf-card" href="https://osf.io" target="_blank" rel="noopener">
+        <span class="ph">Phase 03</span>
+        <div class="st">OSF</div>
+        <p class="sd">Pre-register hypotheses and share materials — the timestamp that separates confirmatory from exploratory.</p>
+        <span class="su">osf.io</span>
+      </a>
+      <a class="shelf-card" href="https://dmptool.org" target="_blank" rel="noopener">
+        <span class="ph">Phase 04</span>
+        <div class="st">DMPTool</div>
+        <p class="sd">Funder-specific data-management-plan templates, usually supported by your library's data services.</p>
+        <span class="su">dmptool.org</span>
+      </a>
+      <a class="shelf-card" href="https://www.go-fair.org/fair-principles/" target="_blank" rel="noopener">
+        <span class="ph">Phases 05–06</span>
+        <div class="st">FAIR Principles</div>
+        <p class="sd">Findable, Accessible, Interoperable, Reusable — the bar your data and code should clear.</p>
+        <span class="su">go-fair.org</span>
+      </a>
+      <a class="shelf-card" href="https://thinkchecksubmit.org" target="_blank" rel="noopener">
+        <span class="ph">Phase 08</span>
+        <div class="st">Think. Check. Submit.</div>
+        <p class="sd">A checklist for judging whether a journal is legitimate before you send it your work.</p>
+        <span class="su">thinkchecksubmit.org</span>
+      </a>
+      <a class="shelf-card" href="https://doaj.org" target="_blank" rel="noopener">
+        <span class="ph">Phase 08</span>
+        <div class="st">DOAJ</div>
+        <p class="sd">The vetted directory of open-access journals — if a "gold OA" venue isn't listed, ask why.</p>
+        <span class="su">doaj.org</span>
+      </a>
+      <a class="shelf-card" href="https://openpolicyfinder.jisc.ac.uk" target="_blank" rel="noopener">
+        <span class="ph">Phase 08</span>
+        <div class="st">SHERPA / Open Policy Finder</div>
+        <p class="sd">What a journal's agreement lets you self-archive, and where — check before signing.</p>
+        <span class="su">openpolicyfinder.jisc.ac.uk</span>
+      </a>
+      <a class="shelf-card" href="https://orcid.org" target="_blank" rel="noopener">
+        <span class="ph">Phase 09</span>
+        <div class="st">ORCID</div>
+        <p class="sd">The persistent researcher ID that ties your output together across name changes and institutions.</p>
+        <span class="su">orcid.org</span>
+      </a>
+      <a class="shelf-card" href="http://retractiondatabase.org" target="_blank" rel="noopener">
+        <span class="ph">Phase 10</span>
+        <div class="st">Retraction Watch Database</div>
+        <p class="sd">Check whether a paper you're citing — or building on — has been corrected or retracted.</p>
+        <span class="su">retractiondatabase.org</span>
+      </a>
+    </div>
+  </div>
+</section>
+
 <footer class="closing">
   <div class="wrap">
     <div class="eyebrow">The loop closes</div>
@@ -774,6 +971,7 @@ footer.closing .final{
       <span>institutional trust</span>
     </div>
     <p class="final">One researcher. Two support systems. Every step of the way.</p>
+    <a class="back-top" href="#top" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;">↑ Back to the top</a>
   </div>
 </footer>
 
@@ -1051,15 +1249,72 @@ phases.forEach((p, idx) => {
 function toggleCard(idx){
   const card = document.getElementById('phase-'+idx);
   const body = document.getElementById('body-'+idx);
+  const head = card.querySelector('.phase-head');
   const isOpen = card.classList.contains('open');
   if(isOpen){
     card.classList.remove('open');
     body.style.maxHeight = null;
+    head.setAttribute('aria-expanded','false');
   } else {
     card.classList.add('open');
     body.style.maxHeight = body.scrollHeight + 'px';
+    head.setAttribute('aria-expanded','true');
+    // deep link: shareable URL for this phase
+    history.replaceState(null, '', '#p' + (idx+1));
   }
 }
+
+// keyboard-accessible accordion heads
+document.querySelectorAll('.phase-head').forEach((h, i) => {
+  h.setAttribute('role','button');
+  h.setAttribute('tabindex','0');
+  h.setAttribute('aria-expanded','false');
+  h.addEventListener('keydown', e => {
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleCard(i); }
+  });
+});
+
+// open a phase directly from a #p1..#p10 link
+(function openFromHash(){
+  const m = location.hash.match(/^#p(\d+)$/);
+  if(!m) return;
+  const i = parseInt(m[1], 10) - 1;
+  if(i >= 0 && i < phases.length) setTimeout(() => jumpTo(i), 350);
+})();
+
+/* ============ PHASE FILTERS + EXPAND ALL ============ */
+const filterRow = document.getElementById('filterRow');
+function phaseMatches(p, f){
+  if(f === 'contested') return p.tags.includes('Contested');
+  if(f === 'lib') return p.lead === 'Library';
+  if(f === 'ai') return p.lead === 'Agentic AI';
+  return true;
+}
+filterRow.addEventListener('click', e => {
+  const btn = e.target.closest('.fbtn');
+  if(!btn) return;
+  filterRow.querySelectorAll('.fbtn').forEach(b => b.classList.toggle('on', b === btn));
+  const f = btn.dataset.f;
+  phases.forEach((p, i) => {
+    const match = phaseMatches(p, f);
+    document.getElementById('phase-'+i).classList.toggle('filtered-out', !match);
+    mapStrip.children[i].classList.toggle('dimmed', !match);
+  });
+});
+
+const expandBtn = document.getElementById('expandAll');
+expandBtn.addEventListener('click', () => {
+  const visible = phases.map((p,i) => document.getElementById('phase-'+i))
+    .filter(c => !c.classList.contains('filtered-out'));
+  const anyClosed = visible.some(c => !c.classList.contains('open'));
+  visible.forEach(c => {
+    const i = parseInt(c.id.replace('phase-',''), 10);
+    const isOpen = c.classList.contains('open');
+    if(anyClosed && !isOpen) toggleCard(i);
+    if(!anyClosed && isOpen) toggleCard(i);
+  });
+  expandBtn.textContent = anyClosed ? 'Collapse all' : 'Expand all';
+});
 
 function jumpTo(idx){
   const card = document.getElementById('phase-'+idx);
@@ -1123,7 +1378,7 @@ updateProgress();
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 (function setupReveal(){
   const targets = document.querySelectorAll(
-    '.section-head, .model-card, .curve-wrap, .map-block, .phase-card, .orch-card, .contested-card, .floor-card, .closing-tags, footer.closing .final'
+    '.section-head, .model-card, .curve-wrap, .map-block, .phase-card, .orch-card, .contested-card, .floor-card, .shelf-card, .closing-tags, footer.closing .final'
   );
   if(reduceMotion){ targets.forEach(t=>t.classList.add('in')); return; }
   targets.forEach(t => t.classList.add('reveal'));
@@ -1168,7 +1423,7 @@ const curve = (function buildCurve(){
   const tip = document.getElementById('curveTip');
   const SVGNS = 'http://www.w3.org/2000/svg';
   const W = 1000, H = 300;
-  const padL = 46, padR = 24, padT = 26, padB = 40;
+  const padL = 60, padR = 24, padT = 26, padB = 40;
   const plotW = W - padL - padR;
   const plotH = H - padT - padB;
   const n = phases.length;
@@ -1249,6 +1504,21 @@ const curve = (function buildCurve(){
     svg.appendChild(hit);
   });
   svg.addEventListener('mouseleave', hideTip);
+
+  // touch: drag a finger across the chart to read each phase
+  function onTouch(e){
+    const rect = svg.getBoundingClientRect();
+    const x = (e.touches[0].clientX - rect.left) / rect.width * W;
+    let best = 0, bd = Infinity;
+    for(let i = 0; i < n; i++){
+      const d = Math.abs(xFor(i) - x);
+      if(d < bd){ bd = d; best = i; }
+    }
+    showTip(best);
+  }
+  svg.addEventListener('touchstart', onTouch, {passive:true});
+  svg.addEventListener('touchmove', onTouch, {passive:true});
+  svg.addEventListener('touchend', hideTip);
 
   // draw-in animation
   function animateDraw(){
@@ -1333,19 +1603,33 @@ function highlightNode(i){
   io.observe(wrap);
 })();
 
-// hero chips isolate their curve line
-document.querySelectorAll('.entity-chip[data-series]').forEach(chip=>{
+// hero chips isolate their curve line — hover previews, click locks it on
+let lockedSeries = null;
+const allChips = document.querySelectorAll('.entity-chip[data-series]');
+allChips.forEach(chip=>{
   const key = chip.dataset.series;
   const on = ()=>{ chip.classList.add('hot'); curve.isolate(key); };
-  const off = ()=>{ chip.classList.remove('hot'); curve.isolate(null); };
+  const off = ()=>{
+    if(lockedSeries !== key) chip.classList.remove('hot');
+    curve.isolate(lockedSeries);
+  };
   chip.addEventListener('mouseenter', on);
   chip.addEventListener('mouseleave', off);
   chip.addEventListener('focus', on);
   chip.addEventListener('blur', off);
   chip.addEventListener('click', ()=>{
+    if(lockedSeries === key){
+      lockedSeries = null;
+      chip.classList.remove('hot');
+    } else {
+      lockedSeries = key;
+      allChips.forEach(c => c.classList.toggle('hot', c === chip));
+    }
+    curve.isolate(lockedSeries);
     document.getElementById('map').scrollIntoView({behavior:'smooth'});
   });
   chip.setAttribute('tabindex','0');
+  chip.setAttribute('role','button');
 });
 </script>
 
