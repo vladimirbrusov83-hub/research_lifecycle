@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Research Lifecycle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,450;0,9..144,600;0,9..144,700;1,9..144,500&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f3ede0;
+  --paper2:#ece3d1;
+  --ink:#221d16;
+  --ink-soft:#4a4335;
+  --rule:#d8cbae;
+  --gold:#a8791f;
+  --gold-deep:#7a591a;
+  --gold-glow:rgba(168,121,31,0.28);
+  --cyan:#0f6e6b;
+  --cyan-deep:#0a4f4d;
+  --paper-shadow: 0 1px 0 rgba(34,29,22,0.08);
+  --serif-display:'Fraunces', serif;
+  --serif-body:'Spectral', serif;
+  --mono:'JetBrains Mono', monospace;
+}
+
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--serif-body);
+  font-size:17px;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* paper grain */
+body::before{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(34,29,22,0.025), transparent 60%),
+    radial-gradient(circle at 80% 70%, rgba(34,29,22,0.02), transparent 55%);
+  z-index:0;
+}
+
+.wrap{max-width:1080px; margin:0 auto; padding:0 32px; position:relative; z-index:1;}
+
+h1,h2,h3,h4{font-family:var(--serif-display); font-weight:600; margin:0;}
+
+.eyebrow{
+  font-family:var(--mono);
+  font-size:11.5px;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:var(--gold-deep);
+  font-weight:700;
+}
+
+a{color:inherit;}
+
+/* ---------- Library Lens toggle ---------- */
+#lensToggle{
+  position:fixed;
+  top:22px; right:22px;
+  z-index:500;
+  font-family:var(--mono);
+  font-size:12px;
+  letter-spacing:0.06em;
+  background:var(--ink);
+  color:var(--paper);
+  border:1px solid var(--ink);
+  padding:11px 16px;
+  border-radius:999px;
+  cursor:pointer;
+  box-shadow:0 4px 14px rgba(34,29,22,0.25);
+  transition:background .25s, transform .2s, box-shadow .25s;
+  display:flex; align-items:center; gap:8px;
+}
+#lensToggle .dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--paper);
+  transition:background .25s;
+}
+#lensToggle:hover{transform:translateY(-1px); box-shadow:0 6px 18px rgba(34,29,22,0.3);}
+body.lens-on #lensToggle{background:var(--gold-deep); border-color:var(--gold-deep);}
+body.lens-on #lensToggle .dot{background:#fff4de; box-shadow:0 0 8px 2px var(--gold-glow);}
+
+/* dim/emphasize under lens mode, scoped to phase cards */
+.col-researcher, .col-ai{ transition:opacity .35s ease, filter .35s ease; }
+.col-library{ transition:box-shadow .35s ease, background .35s ease; }
+body.lens-on .col-researcher,
+body.lens-on .col-ai{
+  opacity:0.32;
+  filter:grayscale(0.5);
+}
+body.lens-on .col-library{
+  background:linear-gradient(180deg, rgba(168,121,31,0.10), rgba(168,121,31,0.03));
+  box-shadow:inset 0 0 0 1px var(--gold-glow), 0 0 24px -6px var(--gold-glow);
+  border-radius:10px;
+}
+body.lens-on .map-block{ transition:opacity .35s ease; }
+body.lens-on .map-block[data-libload="1"]{ opacity:0.4; }
+body.lens-on .lib-callout{
+  box-shadow:0 0 0 2px var(--gold), 0 0 30px -4px var(--gold-glow);
+}
+
+/* ================= HERO ================= */
+header.hero{
+  min-height:96vh;
+  display:flex; flex-direction:column; justify-content:center;
+  padding:120px 0 80px;
+  position:relative;
+  border-bottom:1px solid var(--rule);
+}
+.hero-kicker{
+  font-family:var(--mono); font-size:12px; letter-spacing:0.2em;
+  color:var(--ink-soft); text-transform:uppercase; margin-bottom:22px;
+}
+h1.title{
+  font-size:clamp(48px, 8vw, 96px);
+  line-height:0.95;
+  letter-spacing:-0.01em;
+  max-width:900px;
+}
+.hero-sub{
+  font-family:var(--serif-display); font-style:italic; font-weight:450;
+  font-size:clamp(22px, 3vw, 32px);
+  margin-top:28px;
+  color:var(--ink-soft);
+  max-width:640px;
+}
+.hero-lede{
+  margin-top:22px;
+  font-size:18px;
+  color:var(--ink-soft);
+  max-width:560px;
+}
+.entity-row{
+  display:flex; gap:14px; flex-wrap:wrap;
+  margin-top:56px;
+}
+.entity-chip{
+  border:1px solid var(--ink);
+  border-radius:999px;
+  padding:10px 20px;
+  font-family:var(--mono); font-size:12.5px; letter-spacing:0.03em;
+  display:flex; align-items:center; gap:10px;
+}
+.entity-chip .swatch{width:9px;height:9px;border-radius:50%;}
+.entity-chip.researcher .swatch{background:var(--ink);}
+.entity-chip.ai .swatch{background:var(--cyan);}
+.entity-chip.library .swatch{background:var(--gold);}
+.entity-chip b{font-family:var(--serif-body); font-weight:600; font-size:13.5px;}
+.entity-chip span.tag{color:var(--ink-soft); font-style:italic;}
+
+.scroll-cue{
+  position:absolute; bottom:36px; left:32px;
+  font-family:var(--mono); font-size:11px; letter-spacing:0.15em;
+  color:var(--ink-soft); text-transform:uppercase;
+  display:flex; align-items:center; gap:8px;
+}
+.scroll-cue::after{
+  content:"";
+  width:1px; height:34px; background:var(--ink-soft);
+  animation:pulse 2s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:0.2;}50%{opacity:0.9;}}
+
+/* ================= SECTION GENERIC ================= */
+section{padding:100px 0; border-bottom:1px solid var(--rule);}
+.section-head{margin-bottom:56px; max-width:720px;}
+.section-head h2{font-size:clamp(30px,4vw,44px); margin-top:14px; letter-spacing:-0.01em;}
+.section-head p.lede{margin-top:16px; font-size:18px; color:var(--ink-soft);}
+
+/* ================= MENTAL MODEL ================= */
+.model-grid{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+  margin-top:10px;
+}
+.model-card{
+  border:1px solid var(--rule);
+  background:var(--paper2);
+  border-radius:14px;
+  padding:30px 26px;
+  position:relative;
+  overflow:hidden;
+}
+.model-card::before{
+  content:"";
+  position:absolute; top:0; left:0; right:0; height:5px;
+}
+.model-card.researcher::before{background:var(--ink);}
+.model-card.ai::before{background:var(--cyan);}
+.model-card.library::before{background:var(--gold);}
+.model-card h3{font-size:22px; margin-bottom:4px;}
+.model-card .role{font-family:var(--mono); font-size:11.5px; letter-spacing:0.08em; text-transform:uppercase; margin-bottom:16px; display:block;}
+.model-card.researcher .role{color:var(--ink-soft);}
+.model-card.ai .role{color:var(--cyan-deep);}
+.model-card.library .role{color:var(--gold-deep);}
+.model-card p{font-size:15.5px; color:var(--ink-soft); margin:0;}
+.model-foot{
+  margin-top:34px; font-family:var(--serif-display); font-style:italic;
+  font-size:19px; color:var(--ink-soft); text-align:center;
+}
+
+/* ================= MAP ================= */
+.legend{
+  display:flex; gap:24px; margin-bottom:30px; flex-wrap:wrap;
+  font-family:var(--mono); font-size:12px; color:var(--ink-soft);
+}
+.legend-item{display:flex; align-items:center; gap:8px;}
+.legend-bars{display:flex; gap:2px;}
+.legend-bars i{display:block; width:6px; height:12px; background:var(--rule); border-radius:1px;}
+
+.map-strip{
+  display:grid;
+  grid-template-columns:repeat(10, minmax(92px,1fr));
+  gap:10px;
+  overflow-x:auto;
+  padding-bottom:12px;
+}
+.map-block{
+  border:1px solid var(--rule);
+  background:var(--paper2);
+  border-radius:10px;
+  padding:14px 10px 12px;
+  cursor:pointer;
+  text-align:center;
+  transition:transform .2s, box-shadow .2s, border-color .2s;
+}
+.map-block:hover{transform:translateY(-3px); border-color:var(--ink); box-shadow:0 8px 18px rgba(34,29,22,0.12);}
+.map-block .num{font-family:var(--mono); font-size:11px; color:var(--ink-soft);}
+.map-block .name{font-family:var(--serif-body); font-weight:600; font-size:13px; margin-top:4px; line-height:1.2; min-height:32px;}
+.map-bars{display:flex; justify-content:center; gap:3px; margin-top:10px;}
+.map-bars .bar{display:flex; flex-direction:column-reverse; gap:2px;}
+.map-bars .bar i{display:block; width:6px; height:5px; border-radius:1px; background:var(--rule);}
+.map-bars .bar.r i.on{background:var(--ink);}
+.map-bars .bar.a i.on{background:var(--cyan);}
+.map-bars .bar.l i.on{background:var(--gold);}
+
+/* ================= PHASE CARDS ================= */
+.phase-list{display:flex; flex-direction:column; gap:16px;}
+.phase-card{
+  border:1px solid var(--rule);
+  border-radius:14px;
+  background:var(--paper2);
+  overflow:hidden;
+  scroll-margin-top:26px;
+}
+.phase-head{
+  display:flex; align-items:center; gap:22px;
+  padding:22px 26px;
+  cursor:pointer;
+  user-select:none;
+}
+.phase-head .num{
+  font-family:var(--mono); font-size:13px; color:var(--ink-soft);
+  min-width:52px;
+}
+.phase-head .titles{flex:1;}
+.phase-head h3{font-size:24px;}
+.phase-tags{display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;}
+.ptag{
+  font-family:var(--mono); font-size:10px; letter-spacing:0.08em;
+  border:1px solid var(--gold-deep); color:var(--gold-deep);
+  padding:3px 8px; border-radius:999px;
+}
+.ptag.deep{border-color:var(--cyan-deep); color:var(--cyan-deep);}
+.phase-head .mini-load{display:flex; gap:16px; align-items:center;}
+.mini-col{display:flex; flex-direction:column; align-items:center; gap:4px;}
+.mini-col .lbl{font-family:var(--mono); font-size:9px; color:var(--ink-soft); text-transform:uppercase;}
+.mini-bars{display:flex; gap:2px;}
+.mini-bars i{width:5px; height:14px; border-radius:1px; background:var(--rule);}
+.mini-col.r i.on{background:var(--ink);}
+.mini-col.a i.on{background:var(--cyan);}
+.mini-col.l i.on{background:var(--gold);}
+.chevron{
+  font-family:var(--mono); font-size:20px; color:var(--ink-soft);
+  transition:transform .3s ease;
+  margin-left:8px;
+}
+.phase-card.open .chevron{transform:rotate(45deg);}
+
+.phase-body{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .45s ease;
+}
+.phase-body-inner{
+  padding:0 26px 30px;
+  border-top:1px solid var(--rule);
+  padding-top:26px;
+}
+.lead-line{
+  font-family:var(--mono); font-size:11.5px; letter-spacing:0.06em; text-transform:uppercase;
+  color:var(--ink-soft); margin-bottom:22px;
+}
+.lead-line b{color:var(--gold-deep);}
+.three-col{
+  display:grid; grid-template-columns:repeat(3,1fr); gap:22px;
+}
+.col{
+  padding:18px 18px 20px;
+  border-radius:10px;
+  border:1px solid transparent;
+  cursor:pointer;
+  transition:border-color .25s, transform .2s, box-shadow .25s;
+}
+.col:hover{transform:translateY(-2px);}
+.col-researcher{background:rgba(34,29,22,0.035);}
+.col-researcher:hover{border-color:rgba(34,29,22,0.28); box-shadow:0 8px 18px -10px rgba(34,29,22,0.35);}
+.col-ai{background:rgba(15,110,107,0.06);}
+.col-ai:hover{border-color:rgba(15,110,107,0.35); box-shadow:0 8px 18px -10px rgba(15,110,107,0.35);}
+.col-library{background:rgba(168,121,31,0.08); border-color:rgba(168,121,31,0.25);}
+.col-library:hover{border-color:var(--gold); box-shadow:0 8px 18px -10px rgba(168,121,31,0.4);}
+.col.open{transform:none;}
+.col h4{
+  font-family:var(--mono); font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+  display:flex; align-items:center; gap:8px; margin-bottom:4px;
+}
+.col h4 .dot{width:7px;height:7px;border-radius:50%;}
+.col-researcher h4 .dot{background:var(--ink);}
+.col-ai h4 .dot{background:var(--cyan);}
+.col-library h4 .dot{background:var(--gold);}
+.col-head{display:flex; align-items:flex-start; justify-content:space-between; gap:8px;}
+.col .subrole{display:block; font-family:var(--serif-body); font-style:italic; font-size:12.5px; color:var(--ink-soft); margin-bottom:12px;}
+.col p{font-size:14.5px; margin:0 0 10px; color:var(--ink);}
+.col .stamp{
+  font-family:var(--mono); font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--ink-soft); display:block; margin-bottom:4px;
+}
+.col.col-ai .stamp.today{color:var(--cyan-deep);}
+.col.col-ai .stamp.emerging{color:var(--ink-soft);}
+
+.col-more-cue{
+  font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--ink-soft); display:flex; align-items:center; gap:6px; margin-top:4px;
+}
+.col-more-cue .plus{
+  display:inline-block; width:16px; height:16px; border-radius:50%;
+  border:1px solid currentColor; text-align:center; line-height:14px; font-size:11px;
+  transition:transform .3s ease;
+}
+.col.open .col-more-cue .plus{transform:rotate(45deg);}
+.col-researcher .col-more-cue{color:var(--ink-soft);}
+.col-ai .col-more-cue{color:var(--cyan-deep);}
+.col-library .col-more-cue{color:var(--gold-deep);}
+
+.col-detail{
+  max-height:0; overflow:hidden;
+  transition:max-height .4s ease;
+}
+.col-detail-inner{
+  padding-top:14px; margin-top:12px;
+  border-top:1px dashed rgba(34,29,22,0.18);
+}
+.col-detail h5{
+  font-family:var(--mono); font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase;
+  margin:0 0 8px; color:var(--ink-soft);
+}
+.col-detail ul{margin:0 0 14px; padding-left:18px;}
+.col-detail li{font-size:13.6px; margin-bottom:5px; color:var(--ink);}
+.col-detail .ask{
+  font-family:var(--serif-display); font-style:italic; font-size:14.5px; color:var(--ink-soft);
+  margin:0;
+}
+.col-detail .last{margin-bottom:0;}
+
+.note-line{
+  margin-top:22px;
+  padding-top:18px;
+  border-top:1px dashed var(--rule);
+  font-family:var(--serif-display); font-style:italic; font-size:16.5px;
+  color:var(--ink-soft);
+}
+.verdict-badge{
+  display:inline-block;
+  font-family:var(--mono); font-size:10px; letter-spacing:0.08em; text-transform:uppercase;
+  color:var(--gold-deep); border:1px solid var(--gold-deep);
+  padding:3px 9px; border-radius:999px; margin-right:10px; margin-bottom:6px;
+}
+
+/* ================= ORCHESTRATION ================= */
+.orch-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:22px;}
+.orch-card{
+  background:#191510;
+  color:#dbe8e6;
+  border-radius:12px;
+  padding:22px 22px 24px;
+  border:1px solid #2c261c;
+}
+.orch-card h4{
+  font-family:var(--mono); color:#f0d999; font-size:13px; letter-spacing:0.03em;
+  margin-bottom:14px;
+}
+.orch-card pre{
+  font-family:var(--mono); font-size:12.3px; line-height:1.65;
+  color:#8fe0da; white-space:pre-wrap; margin:0;
+}
+.orch-legend{
+  margin-top:26px; font-family:var(--mono); font-size:12px; color:var(--ink-soft);
+  display:flex; gap:22px; flex-wrap:wrap;
+}
+
+/* ================= CONTESTED ================= */
+.contested-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px;}
+.contested-card{
+  border:1px solid var(--rule); background:var(--paper2);
+  border-radius:12px; padding:24px 26px;
+}
+.contested-card .ptitle{font-family:var(--mono); font-size:12px; letter-spacing:0.05em; color:var(--gold-deep); text-transform:uppercase; margin-bottom:10px;}
+.contested-card p{font-size:15px; color:var(--ink); margin:0 0 14px;}
+
+/* ================= FLOOR ================= */
+.floor-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:22px;}
+.floor-card{
+  position:relative;
+  background:linear-gradient(160deg, #fbf3df, #f3ede0);
+  border:1px solid var(--gold-deep);
+  border-radius:14px;
+  padding:30px 28px;
+  box-shadow:0 10px 26px -14px rgba(122,89,26,0.4);
+}
+.floor-card h3{font-size:21px; color:var(--gold-deep);}
+.floor-card .sub{
+  display:block; font-family:var(--serif-body); font-style:italic; color:var(--ink-soft);
+  font-size:14.5px; margin:6px 0 14px;
+}
+.floor-card p{font-size:15px; margin:0; color:var(--ink);}
+.floor-num{
+  position:absolute; top:20px; right:26px;
+  font-family:var(--mono); font-size:12px; color:var(--gold);
+  opacity:0.7;
+}
+
+/* ================= CLOSING ================= */
+footer.closing{
+  padding:120px 0 100px;
+  text-align:center;
+}
+footer.closing h2{
+  font-size:clamp(34px,5vw,56px);
+  max-width:760px; margin:0 auto;
+}
+footer.closing .lede{
+  max-width:640px; margin:24px auto 0; color:var(--ink-soft); font-size:17.5px;
+}
+.closing-tags{
+  display:flex; justify-content:center; gap:16px; margin-top:44px; flex-wrap:wrap;
+}
+.closing-tags span{
+  font-family:var(--mono); font-size:12px; letter-spacing:0.06em; text-transform:uppercase;
+  border:1px solid var(--rule); padding:9px 18px; border-radius:999px; color:var(--ink-soft);
+}
+footer.closing .final{
+  margin-top:40px; font-family:var(--serif-display); font-style:italic; font-size:18px; color:var(--ink-soft);
+}
+
+/* ================= SCROLL PROGRESS ================= */
+#progress{
+  position:fixed; top:0; left:0; height:3px; width:0%;
+  background:linear-gradient(90deg, var(--gold), var(--cyan));
+  z-index:600;
+  box-shadow:0 0 12px -1px var(--gold-glow);
+  transition:width .1s linear;
+}
+
+/* ================= REVEAL ON SCROLL ================= */
+.reveal{
+  opacity:0;
+  transform:translateY(26px);
+  transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);
+  will-change:opacity, transform;
+}
+.reveal.in{opacity:1; transform:none;}
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1 !important; transform:none !important; transition:none;}
+}
+
+/* ================= LOAD-SHIFT CURVE ================= */
+.curve-wrap{
+  position:relative;
+  margin:0 0 40px;
+  border:1px solid var(--rule);
+  background:linear-gradient(180deg, var(--paper2), rgba(236,227,209,0.35));
+  border-radius:16px;
+  padding:26px 22px 14px;
+  overflow:hidden;
+}
+.curve-wrap .curve-title{
+  font-family:var(--mono); font-size:11px; letter-spacing:0.12em; text-transform:uppercase;
+  color:var(--ink-soft); margin-bottom:6px; display:flex; justify-content:space-between; align-items:center; gap:12px;
+}
+.curve-title .hint{color:var(--gold-deep); font-size:10px; opacity:.85;}
+#loadCurve{display:block; width:100%; height:auto; touch-action:pan-y;}
+#loadCurve .grid-line{stroke:var(--rule); stroke-width:1; stroke-dasharray:2 5;}
+#loadCurve .axis-label{font-family:var(--mono); font-size:10px; fill:var(--ink-soft);}
+#loadCurve .series-path{fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round;
+  transition:opacity .25s, stroke-width .2s;}
+#loadCurve .series-path.r{stroke:var(--ink);}
+#loadCurve .series-path.a{stroke:var(--cyan);}
+#loadCurve .series-path.l{stroke:var(--gold);}
+#loadCurve .dot-r{fill:var(--ink);}
+#loadCurve .dot-a{fill:var(--cyan);}
+#loadCurve .dot-l{fill:var(--gold);}
+#loadCurve .node-dot{transition:r .18s, opacity .25s; cursor:pointer;}
+#loadCurve .x-tick{font-family:var(--mono); font-size:9.5px; fill:var(--ink-soft); cursor:pointer;}
+#loadCurve .x-tick:hover{fill:var(--ink);}
+#loadCurve .guide{stroke:var(--ink); stroke-width:1; opacity:0; transition:opacity .15s;}
+#loadCurve .hit{fill:transparent; cursor:pointer;}
+.curve-dim .series-path{opacity:0.16;}
+.curve-dim .series-path.hot{opacity:1; stroke-width:3.5;}
+.curve-dim .node-dot{opacity:0.16;}
+.curve-dim .node-dot.hot{opacity:1;}
+#curveTip{
+  position:absolute; pointer-events:none; z-index:5;
+  background:var(--ink); color:var(--paper);
+  font-family:var(--mono); font-size:11px; line-height:1.5;
+  padding:8px 11px; border-radius:8px;
+  box-shadow:0 8px 22px -8px rgba(34,29,22,0.6);
+  opacity:0; transform:translate(-50%, -8px); transition:opacity .15s;
+  white-space:nowrap;
+}
+#curveTip .tt{color:#f0d999; font-weight:700; display:block; margin-bottom:3px;}
+#curveTip .row{display:flex; gap:7px; align-items:center;}
+#curveTip .sw{width:8px;height:8px;border-radius:50%; display:inline-block;}
+
+/* animated fill for map bars + mini bars */
+.map-bars .bar i, .mini-bars i, .legend-bars i{transform-origin:bottom;}
+.map-block .map-bars .bar i.on{transform:scaleY(0); transition:transform .5s cubic-bezier(.2,.7,.2,1);}
+.map-block.lit .map-bars .bar i.on{transform:scaleY(1);}
+
+/* active phase highlight (driven by scroll) */
+.map-block.active{border-color:var(--gold); box-shadow:0 0 0 1px var(--gold), 0 8px 18px -8px var(--gold-glow); transform:translateY(-3px);}
+.map-block.active .name{color:var(--gold-deep);}
+
+/* hero staggered entrance */
+.hero-anim{opacity:0; transform:translateY(20px); animation:heroIn .9s cubic-bezier(.2,.7,.2,1) forwards;}
+@keyframes heroIn{to{opacity:1; transform:none;}}
+.entity-chip{cursor:pointer; transition:transform .2s, box-shadow .2s, background .2s, color .2s;}
+.entity-chip:hover{transform:translateY(-2px); box-shadow:0 8px 18px -10px rgba(34,29,22,0.35);}
+.entity-chip.researcher.hot{background:var(--ink); color:var(--paper);}
+.entity-chip.ai.hot{background:var(--cyan); color:#fff; border-color:var(--cyan);}
+.entity-chip.library.hot{background:var(--gold); color:#fff; border-color:var(--gold);}
+.entity-chip.hot .swatch{background:#fff !important;}
+@media (prefers-reduced-motion:reduce){
+  .hero-anim{animation:none; opacity:1; transform:none;}
+}
+
+@media (max-width:860px){
+  .three-col{grid-template-columns:1fr;}
+  .model-grid{grid-template-columns:1fr;}
+  .orch-grid{grid-template-columns:1fr;}
+  .contested-grid{grid-template-columns:1fr;}
+  .floor-grid{grid-template-columns:1fr;}
+  .phase-head{flex-wrap:wrap;}
+  .phase-head .mini-load{width:100%; justify-content:flex-start; margin-top:12px;}
+  .map-strip{grid-template-columns:repeat(5, minmax(90px,1fr));}
+}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<button id="lensToggle" onclick="toggleLens()"><span class="dot"></span><span id="lensLabel">Library lens: off</span></button>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-kicker hero-anim" style="animation-delay:.05s">A map of scientific research, phase by phase</div>
+    <h1 class="title hero-anim" style="animation-delay:.15s">The Research<br>Lifecycle</h1>
+    <p class="hero-sub hero-anim" style="animation-delay:.35s">Who supports the researcher, at every step?</p>
+    <p class="hero-lede hero-anim" style="animation-delay:.5s">Human judgment, agentic AI, and the academic library — walked across every phase of scientific research.</p>
+    <div class="entity-row hero-anim" style="animation-delay:.65s">
+      <div class="entity-chip researcher" data-series="r"><span class="swatch"></span><b>Researcher</b><span class="tag">human · the constant</span></div>
+      <div class="entity-chip ai" data-series="a"><span class="swatch"></span><b>Agentic AI</b><span class="tag">velocity & automation</span></div>
+      <div class="entity-chip library" data-series="l"><span class="swatch"></span><b>Library</b><span class="tag">trust · access · permanence</span></div>
+    </div>
+  </div>
+  <div class="scroll-cue">Scroll</div>
+</header>
+
+<section id="model">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The mental model</div>
+      <h2>One researcher. Two support systems.</h2>
+      <p class="lede">They are not competitors — but they do overlap. Hold that thought.</p>
+    </div>
+    <div class="model-grid">
+      <div class="model-card researcher">
+        <span class="role">judgment stays human</span>
+        <h3>Researcher</h3>
+        <p>The constant across every phase. Scans, decides, commits, interprets, owns the claim.</p>
+      </div>
+      <div class="model-card ai">
+        <span class="role">velocity</span>
+        <h3>Agentic AI</h3>
+        <p>Dynamic workflows, tool use and sub-agent orchestration. Automates the mechanical work and accelerates every phase.</p>
+      </div>
+      <div class="model-card library">
+        <span class="role">trust</span>
+        <h3>The Library</h3>
+        <p>Access, methodology, rights and permanence. The institutional layer that makes fast research also trustworthy research.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="map">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The map</div>
+      <h2>Ten phases — the load shifts across them</h2>
+      <p class="lede">The library runs heavy at the bookends. Agentic AI dominates the middle. The researcher never lets go. Click any phase to jump to its detail below.</p>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-bars"><i style="background:var(--ink)"></i><i style="background:var(--ink)"></i><i style="background:var(--ink)"></i></div> full</div>
+      <div class="legend-item"><div class="legend-bars"><i style="background:var(--ink)"></i><i style="background:var(--ink)"></i><i></i></div> partial</div>
+      <div class="legend-item"><div class="legend-bars"><i style="background:var(--ink)"></i><i></i><i></i></div> light</div>
+    </div>
+    <div class="curve-wrap" id="curveWrap">
+      <div class="curve-title">
+        <span>Support load across the lifecycle</span>
+        <span class="hint">hover the curve · click to jump · use the chips above to isolate a line</span>
+      </div>
+      <svg id="loadCurve" viewBox="0 0 1000 300" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Line chart of researcher, AI and library support load across ten research phases"></svg>
+      <div id="curveTip"></div>
+    </div>
+    <div class="map-strip" id="mapStrip"></div>
+  </div>
+</section>
+
+<section id="phases">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Phase by phase</div>
+      <h2>Support load, lead, and the honest tension</h2>
+      <p class="lede">Each phase: what the researcher owns, what the agent reliably does today (and what's emerging), and where the library leads. Toggle the Library Lens above to see only the institutional layer.</p>
+    </div>
+    <div class="phase-list" id="phaseList"></div>
+  </div>
+</section>
+
+<section id="orchestration">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">Where "agentic" gets concrete</div>
+      <h2>Dynamic workflows and sub-agent orchestration</h2>
+      <p class="lede">The three phases where agentic coding stops being a chatbot and becomes an orchestrated system — a lead agent dispatching sub-agents and tools, looping on its own output.</p>
+    </div>
+    <div class="orch-grid">
+      <div class="orch-card">
+        <h4>02 · Literature Review</h4>
+        <pre>lead-agent — review coordinator
+ ├─ sub-agent · citation puller
+ │     → [search APIs]
+ ├─ sub-agent · per-paper summarizer
+ │     → [PDF parse]
+ └─ sub-agent · synthesis matrix
+ ↻ new papers → re-dispatch</pre>
+      </div>
+      <div class="orch-card">
+        <h4>06 · Data Analysis</h4>
+        <pre>analyst-agent
+ ↕ [code-exec]
+   write → run → read error
+   → revise
+ ├─ sub-agent · figures
+ └─ sub-agent · stats check
+ ↻ loops until it converges</pre>
+      </div>
+      <div class="orch-card">
+        <h4>07 · Interpretation & Writing</h4>
+        <pre>draft-agent
+ ├─ section sub-agents
+ ├─ consistency checker
+ │     results ↔ claims
+ ├─ [citation formatter]
+ └─ [git] commit per revision
+ ↻ redraft on critique</pre>
+      </div>
+    </div>
+    <div class="orch-legend">
+      <span>lead-agent — orchestrator</span>
+      <span>sub-agent — delegated task</span>
+      <span>[tool call] — external system</span>
+      <span>↻ — dynamic loop</span>
+    </div>
+  </div>
+</section>
+
+<section id="contested" class="lib-callout">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The honest part</div>
+      <h2>Where the lanes overlap — suggestion, or record?</h2>
+      <p class="lede">Agentic AI reaches onto library turf in four phases. The split isn't clean — so ask a sharper question: is the output a suggestion, or a record that has to stand up in review?</p>
+    </div>
+    <div class="contested-grid">
+      <div class="contested-card">
+        <div class="ptitle">Phase 02 · Literature Review</div>
+        <p>Both claim to "find everything, rigorously." The agent retrieves; the library's PRISMA protocol is the auditable method of record.</p>
+        <span class="verdict-badge">Verdict · a record</span>
+      </div>
+      <div class="contested-card">
+        <div class="ptitle">Phase 04 · Methodology</div>
+        <p>Both check against reporting standards. But the IRB approval and DMP are commitments the researcher answers for — not passed checklists.</p>
+        <span class="verdict-badge">Verdict · a record</span>
+      </div>
+      <div class="contested-card">
+        <div class="ptitle">Phase 07 · Writing</div>
+        <p>Both format citations and "check integrity." Formatting is delegable; an integrity finding needs institutional standing.</p>
+        <span class="verdict-badge">Verdict · a record</span>
+      </div>
+      <div class="contested-card">
+        <div class="ptitle">Phase 08 · Venue Selection</div>
+        <p>Both assess journal fit. The agent optimizes for acceptance; the library's predatory-venue call holds up in review.</p>
+        <span class="verdict-badge">Verdict · a record</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="floor" class="lib-callout">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="eyebrow">The floor an agent can't reach</div>
+      <h2>Four things only the library can do</h2>
+      <p class="lede">Not a services list — the structural capabilities no model has, by construction. This is the budget case and the reassurance in one.</p>
+    </div>
+    <div class="floor-grid">
+      <div class="floor-card">
+        <div class="floor-num">01</div>
+        <h3>Licensed access</h3>
+        <span class="sub">The corpus behind the paywall</span>
+        <p>An agent can only reason over what it can reach. Subscribed databases and archival holdings are reachable because the institution licenses them.</p>
+      </div>
+      <div class="floor-card">
+        <div class="floor-num">02</div>
+        <h3>Permanence</h3>
+        <span class="sub">A DOI that resolves in 30 years</span>
+        <p>Preservation is a commitment across time, not an output. Repository deposit and archival access outlive any model or funding cycle.</p>
+      </div>
+      <div class="floor-card">
+        <div class="floor-num">03</div>
+        <h3>Authority</h3>
+        <span class="sub">Determinations that must stand</span>
+        <p>A predatory-journal call or integrity finding has to hold up in tenure, funding and misconduct review. An agent's opinion has no standing there.</p>
+      </div>
+      <div class="floor-card">
+        <div class="floor-num">04</div>
+        <h3>Neutrality</h3>
+        <span class="sub">No optimization target</span>
+        <p>Agentic tools are tuned toward an objective — acceptance, engagement, novelty. The library isn't optimizing for anything but the researcher's aims.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="closing">
+  <div class="wrap">
+    <div class="eyebrow">The loop closes</div>
+    <h2>Research is a cycle — and it needs both hands on it.</h2>
+    <p class="lede">Agentic AI moves the researcher through the pipeline faster than ever. The library makes sure what comes out the other end can be trusted, reached and still found decades later — then helps the field's next gap become the next question.</p>
+    <div class="closing-tags">
+      <span>human judgment</span>
+      <span>agentic velocity</span>
+      <span>institutional trust</span>
+    </div>
+    <p class="final">One researcher. Two support systems. Every step of the way.</p>
+  </div>
+</footer>
+
+<script>
+const LOAD = {full:3, partial:2, light:1};
+
+const phases = [
+  {
+    num:"01 / 10", title:"Problem & Question", tags:[],
+    load:{r:"full",a:"partial",l:"full"}, lead:"Library",
+    researcher:"Scans the field, senses a gap, and shapes it into an answerable question.",
+    aiToday:"Runs parallel searches across arXiv, PubMed and Semantic Scholar; clusters prior work and surfaces contradictions.",
+    aiEmerging:"Proposes candidate gaps ranked by novelty for the researcher to judge.",
+    library:"Subject-specialist consultation, licensed database access, and controlled vocabularies (MeSH, thesauri) to scope the terms.",
+    note:"Front of the pipeline: the library scopes, the agent scans, the researcher decides what's worth asking.",
+    rMore:{decisions:["Is this novel, or novel-sounding because I haven't read widely enough yet?","Is it answerable with methods and data actually available to me?","Is it fundable or thesis-scoped — right size for the runway I have?"],
+      cost:"Usually weeks to months, and it often gets revisited after phase 2 forces a reframe."},
+    aMore:{tools:["Elicit and Consensus for question-scoping search","Semantic Scholar / OpenAlex APIs for citation graphs","Perplexity-style agents for fast field orientation"],
+      watch:"An LLM doesn't know what's unpublished, in-review, or embargoed elsewhere — novelty claims need a human sanity check."},
+    lMore:{where:["Subject liaison librarian (office hours or by appointment)","Database trial requests for niche/adjacent-field sources","Research guides (LibGuides) for the subfield"],
+      ask:"“Has this question already been asked — and answered — in a field I don't normally read?”"}
+  },
+  {
+    num:"02 / 10", title:"Literature Review", tags:["Contested","Deep-dive"],
+    load:{r:"full",a:"full",l:"full"}, lead:"Agent + Library — a contested phase",
+    researcher:"Reads, synthesizes, and maps the intellectual landscape into a position.",
+    aiToday:"Sub-agents pull citations, summarize each paper and build a synthesis matrix — re-running as new papers surface.",
+    aiEmerging:"Auto-built citation graphs that flag contested claims and lineage.",
+    library:"Interlibrary loan and archival access, systematic-review (PRISMA) methodology, and citation-management setup.",
+    verdict:"WHO'S AUTHORITATIVE — Both claim rigor. An agent retrieves fast — but the library's systematic-review protocol is the auditable, defensible method of record.",
+    rMore:{decisions:["Sets inclusion/exclusion criteria before reading, not after","Owns the actual intellectual contribution: the position, not the summary","Decides when 'enough' coverage has been reached"],
+      cost:"The single most time-variable phase — a scoping review can take a week; a formal systematic review can take months."},
+    aMore:{tools:["Elicit, scite.ai and Litmaps for evidence synthesis","ResearchRabbit for citation-network exploration","Custom RAG pipelines over a personal PDF library"],
+      watch:"Hallucinated citations and blind spots on non-English or non-indexed ('grey') literature — always verify against the primary source."},
+    lMore:{where:["Systematic-review consultation service (many libraries offer formal SR support with a librarian as co-author)","Interlibrary loan / ILLiad for out-of-print or grey literature","Zotero / EndNote setup and deduplication help"],
+      ask:"“Can you help me build a PRISMA flow diagram and defend my search strategy to a reviewer?”"}
+  },
+  {
+    num:"03 / 10", title:"Hypothesis & Framework", tags:[],
+    load:{r:"full",a:"partial",l:"light"}, lead:"Agentic AI",
+    researcher:"Commits to a testable claim or the theoretical framework the study will stand on.",
+    aiToday:"Stress-tests the claim against retrieved findings; flags prior work that already supports or falsifies it.",
+    aiEmerging:"Surfaces adjacent frameworks the researcher may have missed.",
+    library:"Theory and methods handbooks, and the disciplinary rigor norms a framework must meet.",
+    note:"The agent pressure-tests the idea; the researcher owns the commitment.",
+    rMore:{decisions:["Confirmatory framing vs. exploratory framing — and whether to pre-register","Which theoretical lineage to place the work in, and which to argue against","How falsifiable the claim actually is once written down plainly"],
+      cost:"Often fast once the lit review has landed — days, not weeks — but wrong here is expensive downstream."},
+    aMore:{tools:["Retrieval-augmented 'does this contradict known findings' checks","Socratic-prompting agents that argue the counter-position","Framework-comparison agents that map claim against adjacent theories"],
+      watch:"An agent will happily defend a weak hypothesis just as fluently as a strong one — fluency isn't validity."},
+    lMore:{where:["Theory and methods reference collections","Research guides for specific disciplinary frameworks","OSF pre-registration templates, often mirrored by library research-data services"],
+      ask:"“What's the accepted rigor bar for this framework in my discipline's flagship journals?”"}
+  },
+  {
+    num:"04 / 10", title:"Research Design & Methodology", tags:["Contested"],
+    load:{r:"full",a:"partial",l:"partial"}, lead:"Agent + Library — a contested phase",
+    researcher:"Chooses method, sample and instruments — the decisions that make results defensible.",
+    aiToday:"Scaffolds instrument and pipeline code; checks the design against reporting standards (CONSORT, PRISMA, SPIRIT).",
+    aiEmerging:"Flags power and sample-size problems before data is collected.",
+    library:"Data-management-plan consultation, IRB/ethics documentation, and statistical-consulting referral.",
+    verdict:"WHO'S AUTHORITATIVE — An agent can check a design against a checklist. The IRB approval and DMP are institutional commitments the researcher answers for.",
+    rMore:{decisions:["Sample size and power — before data collection, not after","Which instruments are validated vs. need piloting","What the IRB will actually approve, not just what's ideal on paper"],
+      cost:"IRB/ethics turnaround alone can be weeks to months — build this into the timeline early."},
+    aMore:{tools:["Reporting-standard checkers (CONSORT, PRISMA, SPIRIT compliance)","Claude Code / Copilot for scaffolding instrument and pipeline code","Synthetic-data generation for pipeline dry runs before real collection"],
+      watch:"A design can pass every automated checklist and still fail an IRB reviewer on a judgment call an agent can't see coming."},
+    lMore:{where:["DMPTool or institutional data-management-plan template","IRB/ethics office liaison (often a named library-adjacent role)","Statistical consulting center referral for power analysis"],
+      ask:"“Can you review my draft data-management plan before I submit to the IRB?”"}
+  },
+  {
+    num:"05 / 10", title:"Data Collection", tags:[],
+    load:{r:"partial",a:"full",l:"light"}, lead:"Agentic AI",
+    researcher:"Runs the experiment or study and gathers the raw data.",
+    aiToday:"Automates collection scripts, API pulls and ingestion — orchestration handles retries, logging and validation.",
+    aiEmerging:"Live anomaly detection that catches capture problems mid-run.",
+    library:"Rights and licensing for reused datasets; secure-storage and repository guidance.",
+    note:"Peak automation for capture — but the data's meaning is still the researcher's call.",
+    rMore:{decisions:["When to stop collecting vs. when a pattern is a fluke worth chasing","How to handle participant/protocol deviations in the moment","Whether an anomaly the agent flags is noise or signal"],
+      cost:"Highly variable — an API pull is minutes; a longitudinal field study is years."},
+    aMore:{tools:["Scripted collection pipelines with automatic retry/backoff and logging","API ingestion agents (survey platforms, sensors, public datasets)","Live anomaly-detection agents watching the capture stream"],
+      watch:"Automation can silently normalize a bad sensor or a broken survey skip-logic for weeks before anyone notices."},
+    lMore:{where:["Rights and licensing review for any reused or third-party dataset","Secure-storage consultation (institutional repository, REDCap, secure enclaves)","Data classification guidance for sensitive/regulated data"],
+      ask:"“Am I actually licensed to reuse this dataset the way I'm planning to?”"}
+  },
+  {
+    num:"06 / 10", title:"Data Analysis", tags:["Deep-dive"],
+    load:{r:"partial",a:"full",l:"light"}, lead:"Agentic AI",
+    researcher:"Interprets the patterns and decides what the result actually means. Judgment stays here.",
+    aiToday:"Writes and runs analysis in Python/R, iterates on models, generates figures and self-corrects from error output.",
+    aiEmerging:"Autonomous model selection that reports its own assumptions for review.",
+    library:"Statistical-software licenses, data-literacy workshops and reproducibility checklists.",
+    note:"The strongest agentic phase — a true tool-use loop. Interpretation still stays human.",
+    rMore:{decisions:["What counts as a meaningful effect vs. statistical noise in this field","Which robustness checks are worth running before trusting a result","What the finding means for the original hypothesis — confirm, complicate, or kill it"],
+      cost:"Compresses fast with agentic tooling — what took weeks of manual scripting can now iterate in hours."},
+    aMore:{tools:["Code-execution loops in Python/R (write → run → read error → revise)","Sub-agents for figure generation and statistical assumption checks","AutoML-style model exploration for candidate specifications"],
+      watch:"An agent that 'self-corrects from error output' is optimizing for code that runs, not for the model that's actually appropriate for the data."},
+    lMore:{where:["Statistical-software licensing (SPSS, NVivo, Stata, MATLAB)","Data-literacy and reproducibility workshops","Reproducibility checklists (FAIR, TOP guidelines) for the write-up"],
+      ask:"“Is there a reproducibility checklist my target journal expects that I should be building against now?”"}
+  },
+  {
+    num:"07 / 10", title:"Interpretation & Writing", tags:["Contested","Deep-dive"],
+    load:{r:"full",a:"full",l:"partial"}, lead:"Agentic AI",
+    researcher:"Turns results into an argument and drafts the paper — the researcher's voice and claim.",
+    aiToday:"Drafts sections, checks claims stay consistent with results, formats citations and manages version control across drafts.",
+    aiEmerging:"Whole-draft coherence critique that flags where the argument thins.",
+    library:"Citation-style authority (APA, MLA, Chicago), research-integrity and plagiarism review, and writing support.",
+    verdict:"WHO'S AUTHORITATIVE — Style formatting is safely delegated. Integrity is not — a plagiarism finding needs an accountable institutional process an agent can't provide.",
+    rMore:{decisions:["What the paper actually argues, not just what the data shows","Authorship order and who's accountable for which claim","Which reviewer pushback to accept vs. push back on"],
+      cost:"First full draft is usually the longest single stretch of solo work in the whole pipeline."},
+    aMore:{tools:["Section-drafting agents with a consistency checker against results","Citation formatters wired to Zotero/EndNote libraries","Git-based version control across successive drafts"],
+      watch:"A fluent draft can smuggle in an overstated claim the results don't actually support — read every sentence against the data, not just the prose."},
+    lMore:{where:["Citation-style guides and consultations (APA, MLA, Chicago, discipline-specific)","Writing center referral for structure and argument clarity","Research integrity office and plagiarism screening (iThenticate)"],
+      ask:"“Can you run an integrity screen before I submit, and tell me who the accountable office is if something flags?”"}
+  },
+  {
+    num:"08 / 10", title:"Peer Review & Submission", tags:["Contested"],
+    load:{r:"full",a:"partial",l:"full"}, lead:"Library",
+    researcher:"Selects a venue, submits, and responds to reviewers.",
+    aiToday:"Matches the manuscript to journal scope, formats to guidelines, tracks reviewer comments and drafts responses.",
+    aiEmerging:"Predicts fit and acceptance odds across candidate venues.",
+    library:"Journal-quality metrics and predatory-venue screening; author-rights and copyright negotiation.",
+    verdict:"WHO'S AUTHORITATIVE — An agent's journal-fit guess optimizes for acceptance. The library's predatory-venue call is defensible in a tenure or funding review.",
+    rMore:{decisions:["Prestige vs. speed vs. open-access mandate compliance when picking a venue","Which reviewer critiques are substantive vs. which to politely rebut","Whether to appeal a rejection or move to the next venue"],
+      cost:"Review cycles routinely run 3-9 months per venue — plan for at least one round of revise-and-resubmit."},
+    aMore:{tools:["Journal-matching services (e.g. Jane-style scope matching)","Automated reformatting to a target journal's submission template","Reviewer-comment trackers with draft-response generation"],
+      watch:"A model optimizing for 'acceptance odds' will nudge you toward venues that publish more, not venues that are more reputable."},
+    lMore:{where:["Journal-quality and predatory-venue screening (Cabell's, DOAJ, Think.Check.Submit.)","Author-rights consultation (SHERPA/RoMEO for self-archiving terms)","Copyright negotiation support before signing a publishing agreement"],
+      ask:"“Before I submit here — is this venue legitimate, and what rights am I about to sign away?”"}
+  },
+  {
+    num:"09 / 10", title:"Publication & Dissemination", tags:[],
+    load:{r:"partial",a:"partial",l:"full"}, lead:"Library",
+    researcher:"Publishes, presents and shares the work with the field.",
+    aiToday:"Generates plain-language summaries, abstract variants and press or social copy from the same source paper.",
+    aiEmerging:"Tailored dissemination kits for distinct audiences from one input.",
+    library:"Institutional-repository deposit, DOI/ORCID management and funder open-access compliance — the permanence layer.",
+    note:"Back of the pipeline: the library's permanence layer takes over.",
+    rMore:{decisions:["Which channels actually reach the intended audience (conference vs. preprint vs. press)","How much simplification is honest vs. how much distorts the finding","Whether to engage with media/social attention directly or route it through comms"],
+      cost:"Low researcher time cost once the paper exists — but easy to under-invest in and let the work go unseen."},
+    aMore:{tools:["Plain-language summary generators from the published paper","Abstract-variant and press/social copy generation","Multi-audience dissemination kits from a single source document"],
+      watch:"A generated summary optimized for shareability can quietly drop the caveats and confidence intervals that made the finding honest."},
+    lMore:{where:["Institutional repository deposit service (often mandatory for funded work)","DOI/ORCID registration and management","Funder open-access compliance checks (Plan S, NIH, etc.)"],
+      ask:"“Does my funder require open-access deposit, and can you handle the repository submission for me?”"}
+  },
+  {
+    num:"10 / 10", title:"Post-Publication: Impact & Reuse", tags:[],
+    load:{r:"partial",a:"partial",l:"full"}, lead:"Library",
+    researcher:"Tracks citations, responds to the field and reuses findings — and the cycle restarts.",
+    aiToday:"Monitors citation alerts and flags related new work as it appears.",
+    aiEmerging:"Auto-runs replication checks against new datasets, feeding fresh gaps back to phase 1.",
+    library:"Bibliometrics and altmetrics, long-term preservation and archival access for future researchers.",
+    note:"The loop closes — post-publication signals become the next research question.",
+    rMore:{decisions:["Whether a citing critique warrants a formal response or correction","When enough new evidence has accumulated to justify a follow-up study","How to weigh altmetric buzz against actual scholarly uptake"],
+      cost:"Ongoing, low-intensity — but the phase most often neglected once attention moves to the next project."},
+    aMore:{tools:["Citation-alert monitoring agents (new citing works, retractions, corrections)","Automated replication runs against newly released datasets","Trend-scanning agents that resurface the paper's original 'gap' as new data appears"],
+      watch:"A replication check run automatically against a superficially similar dataset can produce a false 'confirmed' or 'failed' without the domain nuance a human would catch."},
+    lMore:{where:["Bibliometrics and altmetrics tracking (InCites, Altmetric)","Long-term digital preservation (LOCKSS, CLOCKSS, institutional dark archives)","Archival access support for researchers building on the work decades later"],
+      ask:"“Will this dataset and paper still be retrievable in 30 years, and what's the library doing to guarantee that?”"}
+  }
+];
+
+function bars(level, cls){
+  const n = LOAD[level];
+  let out = '';
+  for(let i=1;i<=3;i++){
+    out += `<i class="${cls} ${i<=n?'on':''}"></i>`;
+  }
+  return out;
+}
+
+function miniBars(level, cls){
+  const n = LOAD[level];
+  let out = '';
+  for(let i=1;i<=3;i++) out += `<i class="${i<=n?'on':''}"></i>`;
+  return `<div class="bar ${cls}">${out}</div>`;
+}
+
+// build map strip
+const mapStrip = document.getElementById('mapStrip');
+phases.forEach((p, idx) => {
+  const el = document.createElement('div');
+  el.className = 'map-block';
+  el.dataset.libload = LOAD[p.load.l];
+  el.onclick = () => jumpTo(idx);
+  el.innerHTML = `
+    <div class="num">${(idx+1).toString().padStart(2,'0')}</div>
+    <div class="name">${p.title.split(':')[0].split('&')[0].trim()}</div>
+    <div class="map-bars">
+      ${miniBars(p.load.r,'r')}
+      ${miniBars(p.load.a,'a')}
+      ${miniBars(p.load.l,'l')}
+    </div>
+  `;
+  mapStrip.appendChild(el);
+});
+
+// build phase cards
+const phaseList = document.getElementById('phaseList');
+phases.forEach((p, idx) => {
+  const card = document.createElement('div');
+  card.className = 'phase-card';
+  card.id = 'phase-' + idx;
+
+  const tagsHtml = p.tags.map(t => `<span class="ptag ${t==='Deep-dive'?'deep':''}">${t}</span>`).join('');
+
+  card.innerHTML = `
+    <div class="phase-head" onclick="toggleCard(${idx})">
+      <div class="num">${p.num}</div>
+      <div class="titles">
+        <h3>${p.title}</h3>
+        <div class="phase-tags">${tagsHtml}</div>
+      </div>
+      <div class="mini-load">
+        <div class="mini-col r"><span class="lbl">Res</span><div class="mini-bars">${bars(p.load.r,'')}</div></div>
+        <div class="mini-col a"><span class="lbl">AI</span><div class="mini-bars">${bars(p.load.a,'')}</div></div>
+        <div class="mini-col l"><span class="lbl">Lib</span><div class="mini-bars">${bars(p.load.l,'')}</div></div>
+      </div>
+      <div class="chevron">+</div>
+    </div>
+    <div class="phase-body" id="body-${idx}">
+      <div class="phase-body-inner">
+        <div class="lead-line">Support lead — <b>${p.lead}</b></div>
+        <div class="three-col">
+          <div class="col col-researcher" onclick="toggleColumn(event, ${idx}, 'r')">
+            <div class="col-head"><h4><span class="dot"></span>Researcher</h4></div>
+            <span class="subrole">human · the constant</span>
+            <p>${p.researcher}</p>
+            <div class="col-more-cue"><span class="plus">+</span>Decisions & time cost</div>
+            <div class="col-detail" id="detail-r-${idx}">
+              <div class="col-detail-inner">
+                <h5>Key decisions here</h5>
+                <ul>${p.rMore.decisions.map(d=>`<li>${d}</li>`).join('')}</ul>
+                <h5>Time cost</h5>
+                <p class="ask last">${p.rMore.cost}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col col-ai" onclick="toggleColumn(event, ${idx}, 'a')">
+            <div class="col-head"><h4><span class="dot"></span>Agentic AI</h4></div>
+            <span class="subrole">velocity & automation</span>
+            <span class="stamp today">Reliable today</span>
+            <p>${p.aiToday}</p>
+            <span class="stamp emerging">Emerging</span>
+            <p>${p.aiEmerging}</p>
+            <div class="col-more-cue"><span class="plus">+</span>Tools & what to watch for</div>
+            <div class="col-detail" id="detail-a-${idx}">
+              <div class="col-detail-inner">
+                <h5>Tools researchers actually use</h5>
+                <ul>${p.aMore.tools.map(t=>`<li>${t}</li>`).join('')}</ul>
+                <h5>Watch for</h5>
+                <p class="ask last">${p.aMore.watch}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col col-library" onclick="toggleColumn(event, ${idx}, 'l')">
+            <div class="col-head"><h4><span class="dot"></span>Library</h4></div>
+            <span class="subrole">trust · access · permanence</span>
+            <p>${p.library}</p>
+            <div class="col-more-cue"><span class="plus">+</span>Where to go & what to ask</div>
+            <div class="col-detail" id="detail-l-${idx}">
+              <div class="col-detail-inner">
+                <h5>Where to go</h5>
+                <ul>${p.lMore.where.map(w=>`<li>${w}</li>`).join('')}</ul>
+                <h5>Ask a librarian</h5>
+                <p class="ask last">${p.lMore.ask}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        ${p.verdict ? `<div class="note-line"><span class="verdict-badge">Verdict</span>${p.verdict.replace("WHO'S AUTHORITATIVE — ","")}</div>` : `<div class="note-line">${p.note}</div>`}
+      </div>
+    </div>
+  `;
+  phaseList.appendChild(card);
+});
+
+function toggleCard(idx){
+  const card = document.getElementById('phase-'+idx);
+  const body = document.getElementById('body-'+idx);
+  const isOpen = card.classList.contains('open');
+  if(isOpen){
+    card.classList.remove('open');
+    body.style.maxHeight = null;
+  } else {
+    card.classList.add('open');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  }
+}
+
+function jumpTo(idx){
+  const card = document.getElementById('phase-'+idx);
+  if(!card.classList.contains('open')) toggleCard(idx);
+  card.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+function toggleColumn(evt, idx, which){
+  evt.stopPropagation();
+  const col = evt.currentTarget;
+  const detail = document.getElementById(`detail-${which}-${idx}`);
+  const isOpen = col.classList.contains('open');
+  if(isOpen){
+    col.classList.remove('open');
+    detail.style.maxHeight = null;
+  } else {
+    col.classList.add('open');
+    detail.style.maxHeight = detail.scrollHeight + 'px';
+  }
+  // grow the outer accordion to fit the new inner content
+  const card = document.getElementById('phase-'+idx);
+  const body = document.getElementById('body-'+idx);
+  requestAnimationFrame(() => {
+    if(card.classList.contains('open')){
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  });
+  // re-measure again after the inner transition settles
+  setTimeout(() => {
+    if(card.classList.contains('open')){
+      body.style.maxHeight = body.scrollHeight + 'px';
+    }
+  }, 420);
+}
+
+function toggleLens(){
+  document.body.classList.toggle('lens-on');
+  const on = document.body.classList.contains('lens-on');
+  document.getElementById('lensLabel').textContent = 'Library lens: ' + (on ? 'on' : 'off');
+}
+
+// keep open card heights correct on resize
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.phase-card.open').forEach(card => {
+    const body = card.querySelector('.phase-body');
+    body.style.maxHeight = body.scrollHeight + 'px';
+  });
+});
+
+/* ============ SCROLL PROGRESS BAR ============ */
+const progress = document.getElementById('progress');
+function updateProgress(){
+  const h = document.documentElement;
+  const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
+  progress.style.width = Math.max(0, Math.min(1, scrolled)) * 100 + '%';
+}
+window.addEventListener('scroll', updateProgress, {passive:true});
+updateProgress();
+
+/* ============ REVEAL ON SCROLL ============ */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+(function setupReveal(){
+  const targets = document.querySelectorAll(
+    '.section-head, .model-card, .curve-wrap, .map-block, .phase-card, .orch-card, .contested-card, .floor-card, .closing-tags, footer.closing .final'
+  );
+  if(reduceMotion){ targets.forEach(t=>t.classList.add('in')); return; }
+  targets.forEach(t => t.classList.add('reveal'));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        const el = e.target;
+        // stagger based on index among reveal-siblings
+        const sibs = Array.from(el.parentElement.querySelectorAll(':scope > .reveal'));
+        const i = sibs.indexOf(el);
+        el.style.transitionDelay = (i > 0 ? Math.min(i, 6) * 80 : 0) + 'ms';
+        el.classList.add('in');
+        if(el.classList.contains('map-block')) el.classList.add('lit');
+        io.unobserve(el);
+      }
+    });
+  }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
+  targets.forEach(t => io.observe(t));
+})();
+
+/* ============ ACTIVE PHASE SYNC (phase card <-> map block) ============ */
+(function setupActiveSync(){
+  const blocks = Array.from(document.querySelectorAll('.map-block'));
+  const cards = Array.from(document.querySelectorAll('.phase-card'));
+  if(!blocks.length || !cards.length) return;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){
+        const idx = cards.indexOf(e.target);
+        blocks.forEach((b,i)=> b.classList.toggle('active', i===idx));
+        highlightNode(idx);
+      }
+    });
+  }, {threshold:0.5, rootMargin:'-20% 0px -40% 0px'});
+  cards.forEach(c => io.observe(c));
+})();
+
+/* ============ LOAD-SHIFT CURVE ============ */
+const curve = (function buildCurve(){
+  const svg = document.getElementById('loadCurve');
+  const wrap = document.getElementById('curveWrap');
+  const tip = document.getElementById('curveTip');
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const W = 1000, H = 300;
+  const padL = 46, padR = 24, padT = 26, padB = 40;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const n = phases.length;
+  const xFor = i => padL + (n===1?0:(i/(n-1))*plotW);
+  const yFor = level => padT + (3 - LOAD[level]) / 2 * plotH; // 3->top, 1->bottom
+  const series = [
+    {key:'l', cls:'l', name:'Library',   color:getVar('--gold')},
+    {key:'a', cls:'a', name:'Agentic AI',color:getVar('--cyan')},
+    {key:'r', cls:'r', name:'Researcher',color:getVar('--ink')}
+  ];
+  function getVar(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+  function make(tag, attrs){
+    const el = document.createElementNS(SVGNS, tag);
+    for(const k in attrs) el.setAttribute(k, attrs[k]);
+    return el;
+  }
+  // smooth path (Catmull-Rom -> cubic bezier)
+  function smoothPath(pts){
+    if(pts.length < 2) return '';
+    let d = `M ${pts[0][0]} ${pts[0][1]}`;
+    for(let i=0;i<pts.length-1;i++){
+      const p0 = pts[i-1] || pts[i];
+      const p1 = pts[i];
+      const p2 = pts[i+1];
+      const p3 = pts[i+2] || p2;
+      const t = 0.18;
+      const c1x = p1[0] + (p2[0]-p0[0]) * t;
+      const c1y = p1[1] + (p2[1]-p0[1]) * t;
+      const c2x = p2[0] - (p3[0]-p1[0]) * t;
+      const c2y = p2[1] - (p3[1]-p1[1]) * t;
+      d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2[0]} ${p2[1]}`;
+    }
+    return d;
+  }
+
+  // horizontal grid lines (light / partial / full)
+  [['full',3],['partial',2],['light',1]].forEach(([lbl,lv])=>{
+    const y = padT + (3-lv)/2*plotH;
+    svg.appendChild(make('line',{class:'grid-line', x1:padL, y1:y, x2:W-padR, y2:y}));
+    const t = make('text',{class:'axis-label', x:padL-10, y:y+3, 'text-anchor':'end'});
+    t.textContent = lbl;
+    svg.appendChild(t);
+  });
+
+  // vertical hover guide
+  const guide = make('line',{class:'guide', x1:0, y1:padT-6, x2:0, y2:H-padB});
+  svg.appendChild(guide);
+
+  // build series paths + node dots
+  const pathEls = {}, dotEls = {r:[],a:[],l:[]};
+  series.forEach(s => {
+    const pts = phases.map((p,i)=>[xFor(i), yFor(p.load[s.key])]);
+    const d = smoothPath(pts);
+    const path = make('path',{class:`series-path ${s.cls}`, d});
+    svg.appendChild(path);
+    pathEls[s.key] = path;
+    pts.forEach((pt,i)=>{
+      const c = make('circle',{class:`node-dot dot-${s.cls}`, cx:pt[0], cy:pt[1], r:3.4, 'data-i':i, 'data-s':s.key});
+      c.addEventListener('click', ()=>jumpTo(i));
+      svg.appendChild(c);
+      dotEls[s.key].push(c);
+    });
+  });
+
+  // x ticks (phase numbers) + invisible hit columns
+  phases.forEach((p,i)=>{
+    const x = xFor(i);
+    const t = make('text',{class:'x-tick', x, y:H-padB+22, 'text-anchor':'middle', 'data-i':i});
+    t.textContent = (i+1).toString().padStart(2,'0');
+    t.addEventListener('click', ()=>jumpTo(i));
+    svg.appendChild(t);
+    const colW = plotW/(n-1);
+    const hit = make('rect',{class:'hit', x:x-colW/2, y:padT-6, width:colW, height:plotH+12, 'data-i':i});
+    hit.addEventListener('mousemove', ()=>showTip(i));
+    hit.addEventListener('mouseenter', ()=>showTip(i));
+    hit.addEventListener('click', ()=>jumpTo(i));
+    svg.appendChild(hit);
+  });
+  svg.addEventListener('mouseleave', hideTip);
+
+  // draw-in animation
+  function animateDraw(){
+    series.forEach(s=>{
+      const path = pathEls[s.key];
+      const L = path.getTotalLength();
+      path.style.strokeDasharray = L;
+      path.style.strokeDashoffset = L;
+      path.getBoundingClientRect(); // reflow
+      path.style.transition = 'stroke-dashoffset 1.15s cubic-bezier(.4,.5,.2,1)';
+      path.style.strokeDashoffset = '0';
+    });
+    // fade dots in
+    Object.values(dotEls).flat().forEach((c,idx)=>{
+      c.style.opacity = '0';
+      setTimeout(()=>{ c.style.transition='opacity .4s'; c.style.opacity=''; }, 500 + (+c.getAttribute('data-i'))*30);
+    });
+  }
+
+  function showTip(i){
+    const p = phases[i];
+    const x = xFor(i);
+    guide.setAttribute('x1', x); guide.setAttribute('x2', x);
+    guide.style.opacity = '0.25';
+    // enlarge nodes in this column
+    document.querySelectorAll('#loadCurve .node-dot').forEach(c=>{
+      c.setAttribute('r', (+c.getAttribute('data-i')===i) ? 5.5 : 3.4);
+    });
+    const rect = svg.getBoundingClientRect();
+    const px = rect.left + (x/W)*rect.width;
+    const py = rect.top + (padT/H)*rect.height;
+    const wrapRect = wrap.getBoundingClientRect();
+    tip.style.left = (px - wrapRect.left) + 'px';
+    tip.style.top = (py - wrapRect.top) + 'px';
+    const lvl = k => ({full:'full',partial:'partial',light:'light'})[p.load[k]];
+    tip.innerHTML = `<span class="tt">${(i+1).toString().padStart(2,'0')} · ${p.title}</span>`+
+      `<div class="row"><span class="sw" style="background:${series[2].color}"></span>Researcher — ${lvl('r')}</div>`+
+      `<div class="row"><span class="sw" style="background:${series[1].color}"></span>Agentic AI — ${lvl('a')}</div>`+
+      `<div class="row"><span class="sw" style="background:${series[0].color}"></span>Library — ${lvl('l')}</div>`;
+    tip.style.opacity = '1';
+  }
+  function hideTip(){
+    tip.style.opacity = '0';
+    guide.style.opacity = '0';
+    document.querySelectorAll('#loadCurve .node-dot').forEach(c=>c.setAttribute('r',3.4));
+  }
+
+  // isolate a series (from hero chips)
+  function isolate(key){
+    if(!key){ wrap.classList.remove('curve-dim'); return; }
+    wrap.classList.add('curve-dim');
+    ['r','a','l'].forEach(k=>{
+      const on = k===key;
+      pathEls[k].classList.toggle('hot', on);
+      dotEls[k].forEach(c=>c.classList.toggle('hot', on));
+    });
+  }
+
+  return { animateDraw, showTip, hideTip, isolate };
+})();
+
+// highlight a phase's nodes when its card scrolls into view
+function highlightNode(i){
+  if(!curve) return;
+  // subtle: briefly enlarge the column's nodes
+  document.querySelectorAll('#loadCurve .node-dot').forEach(c=>{
+    c.setAttribute('r', (+c.getAttribute('data-i')===i) ? 5 : 3.4);
+  });
+  const g = document.querySelector('#loadCurve .guide');
+  // don't force the guide on scroll to avoid distraction; leave for hover
+}
+
+// draw the curve when it scrolls into view (once)
+(function observeCurve(){
+  const wrap = document.getElementById('curveWrap');
+  if(reduceMotion) return; // paths already visible
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){ curve.animateDraw(); io.disconnect(); }
+    });
+  }, {threshold:0.35});
+  io.observe(wrap);
+})();
+
+// hero chips isolate their curve line
+document.querySelectorAll('.entity-chip[data-series]').forEach(chip=>{
+  const key = chip.dataset.series;
+  const on = ()=>{ chip.classList.add('hot'); curve.isolate(key); };
+  const off = ()=>{ chip.classList.remove('hot'); curve.isolate(null); };
+  chip.addEventListener('mouseenter', on);
+  chip.addEventListener('mouseleave', off);
+  chip.addEventListener('focus', on);
+  chip.addEventListener('blur', off);
+  chip.addEventListener('click', ()=>{
+    document.getElementById('map').scrollIntoView({behavior:'smooth'});
+  });
+  chip.setAttribute('tabindex','0');
+});
+</script>
+
+</body>
+</html>
