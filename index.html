@@ -846,7 +846,7 @@ footer.closing .final{
       </div>
       <div class="contested-card">
         <div class="ptitle">Phase 07 · Writing</div>
-        <p>Both format citations and "check integrity." Formatting is delegable; an integrity finding needs institutional standing.</p>
+        <p>The agent now formats citations, flags untraceable numbers, and ships figures with their own code and history. But provenance isn't permanence, and a flag isn't an integrity finding — that needs institutional standing.</p>
         <span class="verdict-badge">Verdict · a record</span>
       </div>
       <div class="contested-card">
@@ -998,14 +998,14 @@ const phases = [
     num:"02 / 10", title:"Literature Review", tags:["Contested","Deep-dive"],
     load:{r:"full",a:"full",l:"full"}, lead:"Agent + Library — a contested phase",
     researcher:"Reads, synthesizes, and maps the intellectual landscape into a position.",
-    aiToday:"Sub-agents pull citations, summarize each paper and build a synthesis matrix — re-running as new papers surface.",
+    aiToday:"Sub-agents pull citations, summarize each paper and build a synthesis matrix — re-running as new papers surface. A background reviewer now flags miscited or untraceable claims as the draft grows.",
     aiEmerging:"Auto-built citation graphs that flag contested claims and lineage.",
     library:"Interlibrary loan and archival access, systematic-review (PRISMA) methodology, and citation-management setup.",
-    verdict:"WHO'S AUTHORITATIVE — Both claim rigor. An agent retrieves fast — but the library's systematic-review protocol is the auditable, defensible method of record.",
+    verdict:"WHO'S AUTHORITATIVE — Both claim rigor. An agent retrieves fast — and can even flag a citation that doesn't trace back to its source — but the library's systematic-review protocol is the auditable, defensible method of record. A flag is a prompt to check; PRISMA is the method that holds up in review.",
     rMore:{decisions:["Sets inclusion/exclusion criteria before reading, not after","Owns the actual intellectual contribution: the position, not the summary","Decides when 'enough' coverage has been reached"],
       cost:"The single most time-variable phase — a scoping review can take a week; a formal systematic review can take months."},
-    aMore:{tools:["Elicit, scite.ai and Litmaps for evidence synthesis","ResearchRabbit for citation-network exploration","Custom RAG pipelines over a personal PDF library"],
-      watch:"Hallucinated citations and blind spots on non-English or non-indexed ('grey') literature — always verify against the primary source."},
+    aMore:{tools:["Elicit, scite.ai and Litmaps for evidence synthesis","ResearchRabbit for citation-network exploration","Background citation reviewers (e.g. Claude for Science) that flag incorrect or untraceable references","Custom RAG pipelines over a personal PDF library"],
+      watch:"Hallucinated citations and blind spots on non-English or non-indexed ('grey') literature — a reviewer that flags a bad citation still catches only what it can reach; always verify against the primary source."},
     lMore:{where:["Systematic-review consultation service (many libraries offer formal SR support with a librarian as co-author)","Interlibrary loan / ILLiad for out-of-print or grey literature","Zotero / EndNote setup and deduplication help"],
       ask:"“Can you help me build a PRISMA flow diagram and defend my search strategy to a reviewer?”"}
   },
@@ -1043,13 +1043,13 @@ const phases = [
     num:"05 / 10", title:"Data Collection", tags:[],
     load:{r:"partial",a:"full",l:"light"}, lead:"Agentic AI",
     researcher:"Runs the experiment or study and gathers the raw data.",
-    aiToday:"Automates collection scripts, API pulls and ingestion — orchestration handles retries, logging and validation.",
+    aiToday:"Automates collection scripts, API pulls and ingestion, and connects directly to scientific databases — orchestration handles retries, logging and validation.",
     aiEmerging:"Live anomaly detection that catches capture problems mid-run.",
     library:"Rights and licensing for reused datasets; secure-storage and repository guidance.",
     note:"Peak automation for capture — but the data's meaning is still the researcher's call.",
     rMore:{decisions:["When to stop collecting vs. when a pattern is a fluke worth chasing","How to handle participant/protocol deviations in the moment","Whether an anomaly the agent flags is noise or signal"],
       cost:"Highly variable — an API pull is minutes; a longitudinal field study is years."},
-    aMore:{tools:["Scripted collection pipelines with automatic retry/backoff and logging","API ingestion agents (survey platforms, sensors, public datasets)","Live anomaly-detection agents watching the capture stream"],
+    aMore:{tools:["Scripted collection pipelines with automatic retry/backoff and logging","API ingestion agents (survey platforms, sensors, public datasets)","Direct connectors into scientific databases — 60+ across genomics, proteomics, structural and chemical sources (e.g. Claude for Science)","Live anomaly-detection agents watching the capture stream"],
       watch:"Automation can silently normalize a bad sensor or a broken survey skip-logic for weeks before anyone notices."},
     lMore:{where:["Rights and licensing review for any reused or third-party dataset","Secure-storage consultation (institutional repository, REDCap, secure enclaves)","Data classification guidance for sensitive/regulated data"],
       ask:"“Am I actually licensed to reuse this dataset the way I'm planning to?”"}
@@ -1058,13 +1058,13 @@ const phases = [
     num:"06 / 10", title:"Data Analysis", tags:["Deep-dive"],
     load:{r:"partial",a:"full",l:"light"}, lead:"Agentic AI",
     researcher:"Interprets the patterns and decides what the result actually means. Judgment stays here.",
-    aiToday:"Writes and runs analysis in Python/R, iterates on models, generates figures and self-corrects from error output.",
+    aiToday:"Writes and runs analysis in persistent Python/R kernels that keep state across a session, iterates on models, renders figures and native scientific objects (structures, alignments, genomic tracks), and self-corrects from error output.",
     aiEmerging:"Autonomous model selection that reports its own assumptions for review.",
     library:"Statistical-software licenses, data-literacy workshops and reproducibility checklists.",
     note:"The strongest agentic phase — a true tool-use loop. Interpretation still stays human.",
     rMore:{decisions:["What counts as a meaningful effect vs. statistical noise in this field","Which robustness checks are worth running before trusting a result","What the finding means for the original hypothesis — confirm, complicate, or kill it"],
       cost:"Compresses fast with agentic tooling — what took weeks of manual scripting can now iterate in hours."},
-    aMore:{tools:["Code-execution loops in Python/R (write → run → read error → revise)","Sub-agents for figure generation and statistical assumption checks","AutoML-style model exploration for candidate specifications"],
+    aMore:{tools:["Code-execution loops in persistent Python/R kernels (write → run → read error → revise)","Purpose-built science environments (e.g. Claude for Science) with built-in molecular, genomic and chemical renderers","Compute that scales from laptop to HPC — batch jobs pushed over SSH or Modal","Sub-agents for figure generation and statistical assumption checks"],
       watch:"An agent that 'self-corrects from error output' is optimizing for code that runs, not for the model that's actually appropriate for the data."},
     lMore:{where:["Statistical-software licensing (SPSS, NVivo, Stata, MATLAB)","Data-literacy and reproducibility workshops","Reproducibility checklists (FAIR, TOP guidelines) for the write-up"],
       ask:"“Is there a reproducibility checklist my target journal expects that I should be building against now?”"}
@@ -1073,14 +1073,14 @@ const phases = [
     num:"07 / 10", title:"Interpretation & Writing", tags:["Contested","Deep-dive"],
     load:{r:"full",a:"full",l:"partial"}, lead:"Agentic AI",
     researcher:"Turns results into an argument and drafts the paper — the researcher's voice and claim.",
-    aiToday:"Drafts sections, checks claims stay consistent with results, formats citations and manages version control across drafts.",
+    aiToday:"Drafts sections, checks claims stay consistent with results, flags untraceable numbers and figures, formats citations, and can ship each figure with the exact code, environment and conversation that produced it.",
     aiEmerging:"Whole-draft coherence critique that flags where the argument thins.",
     library:"Citation-style authority (APA, MLA, Chicago), research-integrity and plagiarism review, and writing support.",
-    verdict:"WHO'S AUTHORITATIVE — Style formatting is safely delegated. Integrity is not — a plagiarism finding needs an accountable institutional process an agent can't provide.",
+    verdict:"WHO'S AUTHORITATIVE — Style formatting is safely delegated, and an agent can now attach real provenance to a figure — the code and conversation that made it. But provenance is not permanence, and a flagged inconsistency is not an integrity determination: both still need an accountable institutional process an agent can't provide.",
     rMore:{decisions:["What the paper actually argues, not just what the data shows","Authorship order and who's accountable for which claim","Which reviewer pushback to accept vs. push back on"],
       cost:"First full draft is usually the longest single stretch of solo work in the whole pipeline."},
-    aMore:{tools:["Section-drafting agents with a consistency checker against results","Citation formatters wired to Zotero/EndNote libraries","Git-based version control across successive drafts"],
-      watch:"A fluent draft can smuggle in an overstated claim the results don't actually support — read every sentence against the data, not just the prose."},
+    aMore:{tools:["Section-drafting agents with a consistency checker against results","Background reviewers that flag numbers and figures which don't trace to the underlying data (e.g. Claude for Science)","Artifacts that carry their own history — the code, environment and conversation behind each figure","Citation formatters wired to Zotero/EndNote libraries"],
+      watch:"A fluent draft can smuggle in an overstated claim the results don't actually support — and an artifact's history shows how a number was made, not whether the claim is true. Read every sentence against the data, not just the prose."},
     lMore:{where:["Citation-style guides and consultations (APA, MLA, Chicago, discipline-specific)","Writing center referral for structure and argument clarity","Research integrity office and plagiarism screening (iThenticate)"],
       ask:"“Can you run an integrity screen before I submit, and tell me who the accountable office is if something flags?”"}
   },
