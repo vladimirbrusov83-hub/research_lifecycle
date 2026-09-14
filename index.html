@@ -57,16 +57,6 @@ body::before{
     radial-gradient(ellipse 80% 55% at 50% 105%,rgba(227,169,75,0.09), transparent 62%),
     radial-gradient(ellipse 55% 40% at 78% 72%, rgba(63,208,198,0.07), transparent 60%);
 }
-body::after{
-  content:"";
-  position:fixed; inset:0;
-  pointer-events:none;
-  z-index:0;
-  opacity:0.42;
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='24' cy='38' r='.8' opacity='.55'/%3E%3Ccircle cx='96' cy='12' r='.5' opacity='.35'/%3E%3Ccircle cx='158' cy='74' r='1' opacity='.6'/%3E%3Ccircle cx='212' cy='30' r='.6' opacity='.4'/%3E%3Ccircle cx='288' cy='96' r='.9' opacity='.5'/%3E%3Ccircle cx='350' cy='44' r='.5' opacity='.3'/%3E%3Ccircle cx='396' cy='128' r='.8' opacity='.45'/%3E%3Ccircle cx='58' cy='150' r='.6' opacity='.4'/%3E%3Ccircle cx='132' cy='196' r='.9' opacity='.5'/%3E%3Ccircle cx='198' cy='158' r='.5' opacity='.3'/%3E%3Ccircle cx='262' cy='224' r='.8' opacity='.5'/%3E%3Ccircle cx='330' cy='180' r='.6' opacity='.35'/%3E%3Ccircle cx='384' cy='252' r='.9' opacity='.45'/%3E%3Ccircle cx='40' cy='288' r='.7' opacity='.4'/%3E%3Ccircle cx='110' cy='336' r='1' opacity='.55'/%3E%3Ccircle cx='176' cy='300' r='.5' opacity='.3'/%3E%3Ccircle cx='244' cy='368' r='.8' opacity='.45'/%3E%3Ccircle cx='308' cy='312' r='.6' opacity='.35'/%3E%3Ccircle cx='372' cy='390' r='.9' opacity='.5'/%3E%3Ccircle cx='74' cy='404' r='.5' opacity='.3'/%3E%3C/g%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
-}
 
 ::selection{background:rgba(63,208,198,0.30); color:#fff;}
 :focus-visible{outline:2px solid var(--cyan-deep); outline-offset:3px; border-radius:4px;}
@@ -160,7 +150,6 @@ header.hero::before{
   margin-top:-310px;
   pointer-events:none;
   z-index:0;
-  filter:drop-shadow(0 0 22px rgba(63,208,198,0.20));
 }
 .hero-ring svg{width:100%; height:100%; animation:ringSpin 110s linear infinite;}
 @keyframes ringSpin{to{transform:rotate(360deg);}}
@@ -621,11 +610,14 @@ footer.closing .final{
 
 /* ================= SCROLL PROGRESS ================= */
 #progress{
-  position:fixed; top:0; left:0; height:2px; width:0%;
+  position:fixed; top:0; left:0; height:2px; width:100%;
   background:linear-gradient(90deg, var(--gold), var(--cyan));
-  z-index:600;
   box-shadow:0 0 14px 1px var(--cyan-glow);
-  transition:width .1s linear;
+  z-index:600;
+  pointer-events:none;
+  transform-origin:left center;
+  transform:scaleX(0);
+  will-change:transform;
 }
 
 /* ================= REVEAL ON SCROLL ================= */
@@ -633,7 +625,6 @@ footer.closing .final{
   opacity:0;
   transform:translateY(26px);
   transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1);
-  will-change:opacity, transform;
 }
 .reveal.in{opacity:1; transform:none;}
 @media (prefers-reduced-motion:reduce){
@@ -758,7 +749,7 @@ footer.closing .final{
     --cyan:#0a5450; --cyan-deep:#083f3c;
   }
   body{background:#fff !important; color:#1a1a1a !important; font-size:13px;}
-  body::before, body::after, header.hero::before, .curve-wrap::before{display:none !important;}
+  body::before, header.hero::before, .curve-wrap::before{display:none !important;}
   h1.title, .section-head h2, footer.closing h2{color:#111 !important; text-shadow:none !important;}
   .model-card, .map-block, .phase-card, .contested-card, .shelf-card, .curve-wrap, .orch-card, .floor-card{
     background:#fff !important; border-color:#bbb !important; box-shadow:none !important;
@@ -962,28 +953,23 @@ footer.closing::before{
     radial-gradient(ellipse 46% 38% at 22% 30%, rgba(63,208,198,0.10), transparent 64%),
     radial-gradient(ellipse 40% 34% at 76% 64%, rgba(38,96,150,0.14), transparent 64%);
   animation:nebDrift 46s ease-in-out infinite alternate;
+  will-change:transform;
 }
-.sky .tw1{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520'%3E%3Cg fill='%23ffffff'%3E%3Ccircle cx='44' cy='70' r='1.1'/%3E%3Ccircle cx='160' cy='22' r='.8'/%3E%3Ccircle cx='250' cy='130' r='1.3'/%3E%3Ccircle cx='372' cy='60' r='.9'/%3E%3Ccircle cx='480' cy='180' r='1.1'/%3E%3Ccircle cx='90' cy='250' r='.9'/%3E%3Ccircle cx='210' cy='300' r='1.2'/%3E%3Ccircle cx='330' cy='240' r='.8'/%3E%3Ccircle cx='430' cy='330' r='1.1'/%3E%3Ccircle cx='60' cy='410' r='1'/%3E%3Ccircle cx='180' cy='470' r='.8'/%3E%3Ccircle cx='300' cy='420' r='1.3'/%3E%3Ccircle cx='400' cy='490' r='.9'/%3E%3Ccircle cx='500' cy='440' r='.8'/%3E%3C/g%3E%3C/svg%3E");
-  background-size:520px 520px;
-  opacity:.28;
+/* One merged star layer. This page used to stack five separate full-viewport
+   surfaces and the GPU had to blend every one of them on every scroll frame.
+   Same artwork, baked at its peak brightness, now on a single twinkling layer. */
+.sky .stars{
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1100' height='1100'%3E%3Cg fill='%23f2c983' opacity='0.7'%3E%3Cpath d='M140 90 q0 9 9 9 q-9 0 -9 9 q0-9-9-9 q9 0 9-9z'/%3E%3Cpath d='M760 210 q0 6 6 6 q-6 0-6 6 q0-6-6-6 q6 0 6-6z'/%3E%3Cpath d='M420 640 q0 8 8 8 q-8 0-8 8 q0-8-8-8 q8 0 8-8z'/%3E%3Cpath d='M960 880 q0 11 11 11 q-11 0-11 11 q0-11-11-11 q11 0 11-11z'/%3E%3Cpath d='M180 960 q0 6 6 6 q-6 0-6 6 q0-6-6-6 q6 0 6-6z'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cg fill='%23bfe9e5' opacity='0.42'%3E%3Ccircle cx='120' cy='40' r='1.2'/%3E%3Ccircle cx='330' cy='110' r='.9'/%3E%3Ccircle cx='560' cy='70' r='1.3'/%3E%3Ccircle cx='60' cy='260' r='.9'/%3E%3Ccircle cx='260' cy='320' r='1.4'/%3E%3Ccircle cx='470' cy='250' r='1'/%3E%3Ccircle cx='650' cy='360' r='.9'/%3E%3Ccircle cx='150' cy='520' r='1.2'/%3E%3Ccircle cx='380' cy='560' r='1'/%3E%3Ccircle cx='600' cy='600' r='1.3'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='520' height='520'%3E%3Cg fill='%23ffffff' opacity='0.42'%3E%3Ccircle cx='44' cy='70' r='1.1'/%3E%3Ccircle cx='160' cy='22' r='.8'/%3E%3Ccircle cx='250' cy='130' r='1.3'/%3E%3Ccircle cx='372' cy='60' r='.9'/%3E%3Ccircle cx='480' cy='180' r='1.1'/%3E%3Ccircle cx='90' cy='250' r='.9'/%3E%3Ccircle cx='210' cy='300' r='1.2'/%3E%3Ccircle cx='330' cy='240' r='.8'/%3E%3Ccircle cx='430' cy='330' r='1.1'/%3E%3Ccircle cx='60' cy='410' r='1'/%3E%3Ccircle cx='180' cy='470' r='.8'/%3E%3Ccircle cx='300' cy='420' r='1.3'/%3E%3Ccircle cx='400' cy='490' r='.9'/%3E%3Ccircle cx='500' cy='440' r='.8'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cg fill='%23ffffff' opacity='0.42'%3E%3Ccircle cx='24' cy='38' r='.8' opacity='.55'/%3E%3Ccircle cx='96' cy='12' r='.5' opacity='.35'/%3E%3Ccircle cx='158' cy='74' r='1' opacity='.6'/%3E%3Ccircle cx='212' cy='30' r='.6' opacity='.4'/%3E%3Ccircle cx='288' cy='96' r='.9' opacity='.5'/%3E%3Ccircle cx='350' cy='44' r='.5' opacity='.3'/%3E%3Ccircle cx='396' cy='128' r='.8' opacity='.45'/%3E%3Ccircle cx='58' cy='150' r='.6' opacity='.4'/%3E%3Ccircle cx='132' cy='196' r='.9' opacity='.5'/%3E%3Ccircle cx='198' cy='158' r='.5' opacity='.3'/%3E%3Ccircle cx='262' cy='224' r='.8' opacity='.5'/%3E%3Ccircle cx='330' cy='180' r='.6' opacity='.35'/%3E%3Ccircle cx='384' cy='252' r='.9' opacity='.45'/%3E%3Ccircle cx='40' cy='288' r='.7' opacity='.4'/%3E%3Ccircle cx='110' cy='336' r='1' opacity='.55'/%3E%3Ccircle cx='176' cy='300' r='.5' opacity='.3'/%3E%3Ccircle cx='244' cy='368' r='.8' opacity='.45'/%3E%3Ccircle cx='308' cy='312' r='.6' opacity='.35'/%3E%3Ccircle cx='372' cy='390' r='.9' opacity='.5'/%3E%3Ccircle cx='74' cy='404' r='.5' opacity='.3'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.021'/%3E%3C/svg%3E");
+  background-size:1100px 1100px, 700px 700px, 520px 520px, 420px 420px, 160px 160px;
+  opacity:.66;            /* the level the twinkle sits at, for reduced-motion + print */
   animation:twinkle 7s ease-in-out infinite alternate;
 }
-.sky .tw2{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cg fill='%23bfe9e5'%3E%3Ccircle cx='120' cy='40' r='1.2'/%3E%3Ccircle cx='330' cy='110' r='.9'/%3E%3Ccircle cx='560' cy='70' r='1.3'/%3E%3Ccircle cx='60' cy='260' r='.9'/%3E%3Ccircle cx='260' cy='320' r='1.4'/%3E%3Ccircle cx='470' cy='250' r='1'/%3E%3Ccircle cx='650' cy='360' r='.9'/%3E%3Ccircle cx='150' cy='520' r='1.2'/%3E%3Ccircle cx='380' cy='560' r='1'/%3E%3Ccircle cx='600' cy='600' r='1.3'/%3E%3C/g%3E%3C/svg%3E");
-  background-size:700px 700px;
-  opacity:.22;
-  animation:twinkle 11s ease-in-out infinite alternate-reverse;
-}
-/* gold four-point sparkles, sparse, like the board's marker stars */
-.sky .spk{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1100' height='1100'%3E%3Cg fill='%23f2c983'%3E%3Cpath d='M140 90 q0 9 9 9 q-9 0 -9 9 q0-9-9-9 q9 0 9-9z'/%3E%3Cpath d='M760 210 q0 6 6 6 q-6 0-6 6 q0-6-6-6 q6 0 6-6z'/%3E%3Cpath d='M420 640 q0 8 8 8 q-8 0-8 8 q0-8-8-8 q8 0 8-8z'/%3E%3Cpath d='M960 880 q0 11 11 11 q-11 0-11 11 q0-11-11-11 q11 0 11-11z'/%3E%3Cpath d='M180 960 q0 6 6 6 q-6 0-6 6 q0-6-6-6 q6 0 6-6z'/%3E%3C/g%3E%3C/svg%3E");
-  background-size:1100px 1100px;
-  opacity:.55;
-  animation:sparkleTw 5.5s ease-in-out infinite alternate;
-}
-@keyframes twinkle{from{opacity:.14;} to{opacity:.42;}}
-@keyframes sparkleTw{0%{opacity:.25;} 50%{opacity:.7;} 100%{opacity:.35;}}
+@keyframes twinkle{from{opacity:.33;} to{opacity:1;}}
 @keyframes nebDrift{
   from{transform:translate3d(0,0,0) scale(1);}
   to{transform:translate3d(-2.5%,1.8%,0) scale(1.06);}
@@ -1025,9 +1011,20 @@ footer.closing::before{
 @keyframes eqIn{from{opacity:0;} to{opacity:var(--o, .16);}}
 
 /* ---- hero: orrery (replaces the flat ring) ---- */
-.hero-ring{filter:drop-shadow(0 0 26px rgba(227,169,75,0.16));}
-.hero-ring svg{animation:none; overflow:visible;}
-.hero-ring .orb{transform-origin:310px 310px; transform-box:view-box;}
+/* static glow layer: same look as the old drop-shadow, but it is painted once
+   instead of re-rasterising the whole spinning orrery every frame */
+.hero-ring::before{
+  content:"";
+  position:absolute; inset:-8%;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:0;
+  background:
+    radial-gradient(closest-side, rgba(227,169,75,0.13), rgba(227,169,75,0.05) 62%, transparent 78%),
+    radial-gradient(closest-side, rgba(63,208,198,0.10), transparent 70%);
+}
+.hero-ring svg{animation:none; overflow:visible; position:relative; z-index:1;}
+.hero-ring .orb{transform-origin:310px 310px; transform-box:view-box; will-change:transform;}
 .hero-ring .o1{animation:ringSpin 120s linear infinite;}
 .hero-ring .o2{animation:ringSpin 74s linear infinite reverse;}
 .hero-ring .o3{animation:ringSpin 52s linear infinite;}
@@ -1040,6 +1037,13 @@ footer.closing::before{
 @keyframes corePulse{0%,100%{transform:scale(1); opacity:.85;} 50%{transform:scale(1.12); opacity:1;}}
 @keyframes flarePulse{0%,100%{transform:scale(.92) rotate(0deg); opacity:.55;} 50%{transform:scale(1.06) rotate(2deg); opacity:.95;}}
 @keyframes sparkPulse{0%,100%{transform:scale(.7); opacity:.35;} 50%{transform:scale(1.15); opacity:1;}}
+
+/* hero motion only runs while the hero is actually on screen (and the tab is visible) */
+body.hero-idle .hero-ring .orb,
+body.hero-idle .hero-ring .core,
+body.hero-idle .hero-ring .flare,
+body.hero-idle .hero-ring .spark,
+body.hero-idle .eq > span{animation-play-state:paused;}
 
 /* ---- hero: chalk underline that draws itself under the title ---- */
 .title-rule{
@@ -1204,7 +1208,7 @@ body.lens-on #lensToggle::after{animation:sweep .9s ease-out;}
 <body>
 
 <div id="progress"></div>
-<div class="sky" aria-hidden="true"><i class="neb"></i><i class="tw1"></i><i class="tw2"></i><i class="spk"></i></div>
+<div class="sky" aria-hidden="true"><i class="neb"></i><i class="stars"></i></div>
 
 <button id="lensToggle" onclick="toggleLens()"><span class="dot"></span><span id="lensLabel">Library lens: off</span></button>
 
@@ -1956,12 +1960,17 @@ window.addEventListener('resize', () => {
 
 /* ============ SCROLL PROGRESS BAR ============ */
 const progress = document.getElementById('progress');
+let progressTick = false;
 function updateProgress(){
   const h = document.documentElement;
   const scrolled = h.scrollTop / (h.scrollHeight - h.clientHeight);
-  progress.style.width = Math.max(0, Math.min(1, scrolled)) * 100 + '%';
+  progress.style.transform = 'scaleX(' + Math.max(0, Math.min(1, scrolled)).toFixed(4) + ')';
 }
-window.addEventListener('scroll', updateProgress, {passive:true});
+window.addEventListener('scroll', () => {
+  if(progressTick) return;
+  progressTick = true;
+  requestAnimationFrame(() => { updateProgress(); progressTick = false; });
+}, {passive:true});
 updateProgress();
 
 /* ============ REVEAL ON SCROLL ============ */
@@ -1980,6 +1989,8 @@ const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').match
         const sibs = Array.from(el.parentElement.querySelectorAll(':scope > .reveal'));
         const i = sibs.indexOf(el);
         el.style.transitionDelay = (i > 0 ? Math.min(i, 6) * 80 : 0) + 'ms';
+        el.style.willChange = 'opacity, transform';
+        el.addEventListener('transitionend', () => { el.style.willChange = ''; }, {once:true});
         el.classList.add('in');
         if(el.classList.contains('map-block')) el.classList.add('lit');
         io.unobserve(el);
@@ -2280,12 +2291,19 @@ allChips.forEach(chip=>{
   panels.forEach(p => p.classList.add('spot'));
   const fine = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
   if(fine){
+    let spotEl = null, spotX = 0, spotY = 0, spotRaf = 0;
     document.addEventListener('pointermove', e => {
       const el = e.target.closest && e.target.closest('.spot');
       if(!el) return;
-      const r = el.getBoundingClientRect();
-      el.style.setProperty('--sx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
-      el.style.setProperty('--sy', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+      spotEl = el; spotX = e.clientX; spotY = e.clientY;
+      if(spotRaf) return;
+      spotRaf = requestAnimationFrame(() => {
+        spotRaf = 0;
+        if(!spotEl) return;
+        const r = spotEl.getBoundingClientRect();
+        spotEl.style.setProperty('--sx', ((spotX - r.left) / r.width * 100).toFixed(1) + '%');
+        spotEl.style.setProperty('--sy', ((spotY - r.top) / r.height * 100).toFixed(1) + '%');
+      });
     }, {passive:true});
   }
   if(reduceMotion) return;
@@ -2316,6 +2334,18 @@ allChips.forEach(chip=>{
       field.style.setProperty('--mx', '0px'); field.style.setProperty('--my', '0px');
     });
   }
+  // hero animations are infinite loops: stop them whenever nobody can see them
+  if(hero){
+    let heroSeen = true, pageHidden = document.hidden;
+    const syncIdle = () => document.body.classList.toggle('hero-idle', !heroSeen || pageHidden);
+    new IntersectionObserver(entries => {
+      heroSeen = entries[0].isIntersecting;
+      syncIdle();
+    }, {rootMargin:'120px 0px 120px 0px'}).observe(hero);
+    document.addEventListener('visibilitychange', () => { pageHidden = document.hidden; syncIdle(); });
+    syncIdle();
+  }
+
   if(ring){
     let ticking = false;
     const onScroll = () => {
