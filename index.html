@@ -489,7 +489,7 @@ section{padding:100px 0; border-bottom:1px solid var(--rule); position:relative;
   background:linear-gradient(180deg, rgba(13,19,28,0.82), rgba(13,19,28,0.55));
   color:#cfdbdf;
   border-radius:12px;
-  padding:22px 22px 24px;
+  padding:22px 24px 26px;
   border:1px solid #2a3746;
   box-shadow:inset 0 1px 0 rgba(255,255,255,0.04);
 }
@@ -497,14 +497,43 @@ section{padding:100px 0; border-bottom:1px solid var(--rule); position:relative;
   font-family:var(--mono); color:var(--gold-deep); font-size:13px; letter-spacing:0.05em;
   margin-bottom:14px; font-weight:500;
 }
-.orch-card pre{
-  font-family:var(--mono); font-size:12.3px; line-height:1.65;
-  color:var(--cyan-deep); white-space:pre-wrap; margin:0;
+.orch-ask{
+  font-size:15px; line-height:1.55; color:var(--ink); margin:0 0 20px;
+  padding-left:13px; border-left:2px solid rgba(227,169,75,0.5); font-style:italic;
 }
+.orch-node{
+  font-size:14.5px; line-height:1.45; color:#eaf2f4;
+  border:1px solid rgba(63,208,198,0.42); background:rgba(63,208,198,0.09);
+  border-radius:10px; padding:11px 14px;
+}
+.orch-split{
+  margin:0 0 0 16px; padding:4px 0 2px 20px;
+  border-left:1px solid #354351;
+}
+.orch-helper{
+  display:block; position:relative; font-size:14.5px; line-height:1.5;
+  color:#c9d6db; padding:9px 0 9px 2px;
+}
+.orch-helper::before{
+  content:""; position:absolute; left:-20px; top:21px; width:16px; height:1px; background:#354351;
+}
+.orch-loop{
+  margin-top:16px; font-size:14px; line-height:1.5; color:var(--gold-deep);
+  display:flex; gap:9px; align-items:flex-start;
+}
+.orch-loop::before{content:"↻"; font-size:16px; line-height:1.35; flex:none;}
 .orch-legend{
-  margin-top:26px; font-family:var(--mono); font-size:12px; color:var(--ink-soft);
-  display:flex; gap:22px; flex-wrap:wrap;
+  margin-top:30px; font-size:14px; color:var(--ink-soft);
+  display:flex; gap:30px; flex-wrap:wrap; align-items:center;
 }
+.orch-legend span{display:flex; align-items:center; gap:10px;}
+.orch-legend i{
+  flex:none; width:16px; height:16px; border-radius:5px; font-style:normal;
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.orch-legend i.k-lead{border:1px solid rgba(63,208,198,0.5); background:rgba(63,208,198,0.14);}
+.orch-legend i.k-help{width:16px; height:1px; border-radius:0; background:#5c6d7a;}
+.orch-legend i.k-loop{color:var(--gold-deep); font-size:15px; width:auto;}
 
 /* ================= CONTESTED ================= */
 .contested-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:20px;}
@@ -735,7 +764,7 @@ footer.closing .final{
     background:#fff !important; border-color:#bbb !important; box-shadow:none !important;
     backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
   }
-  .orch-card, .orch-card pre, .col p, .col-detail li, .contested-card p, .floor-card p{color:#222 !important;}
+  .orch-card, .orch-node, .orch-helper, .orch-ask, .orch-loop, .col p, .col-detail li, .contested-card p, .floor-card p{color:#222 !important;}
   .col-researcher, .col-ai, .col-library{background:#f6f6f6 !important;}
   #lensToggle, #progress, .scroll-cue, .chevron, .col-more-cue,
   .phase-controls, .curve-title .hint, .back-top, .hero-ring{display:none !important;}
@@ -1026,48 +1055,57 @@ footer.closing::before{
 <section id="orchestration">
   <div class="wrap">
     <div class="section-head">
-      <div class="eyebrow">Where "agentic" gets concrete</div>
-      <h2>Dynamic workflows and sub-agent orchestration</h2>
-      <p class="lede">The three phases where agentic coding stops being a chatbot and becomes an orchestrated system, a lead agent dispatching sub-agents and tools, looping on its own output.</p>
+      <div class="eyebrow">What "agentic" actually means</div>
+      <h2>One request, many helpers</h2>
+      <p class="lede">A chatbot answers a question and stops. An agentic tool takes a whole job, splits it into parts, hands each part to a helper, then looks at what came back and runs it again. Here is what that looks like in the three phases where it changes the work most.</p>
     </div>
     <div class="orch-grid">
       <div class="orch-card">
         <h4>02 · Literature Review</h4>
-        <pre>lead-agent · review coordinator
- ├─ sub-agent · citation puller
- │     → [search APIs]
- ├─ sub-agent · per-paper summarizer
- │     → [PDF parse]
- └─ sub-agent · synthesis matrix
- ↻ new papers → re-dispatch</pre>
+        <p class="orch-ask">&ldquo;Find what has already been published on my question.&rdquo;</p>
+        <div class="orch-flow">
+          <div class="orch-node">One assistant takes the request and splits it up</div>
+          <div class="orch-split">
+          <span class="orch-helper">searches the databases</span>
+          <span class="orch-helper">reads each paper and writes a summary</span>
+          <span class="orch-helper">lays all the summaries side by side in one table</span>
+          </div>
+          <div class="orch-loop">New papers keep appearing, so it runs the whole search again.</div>
+        </div>
       </div>
       <div class="orch-card">
         <h4>06 · Data Analysis</h4>
-        <pre>analyst-agent
- ↕ [code-exec]
-   write → run → read error
-   → revise
- ├─ sub-agent · figures
- └─ sub-agent · stats check
- ↻ loops until it converges</pre>
+        <p class="orch-ask">&ldquo;Run the analysis on this dataset.&rdquo;</p>
+        <div class="orch-flow">
+          <div class="orch-node">One assistant takes the request and splits it up</div>
+          <div class="orch-split">
+          <span class="orch-helper">writes the analysis code and runs it</span>
+          <span class="orch-helper">reads its own error messages and fixes them</span>
+          <span class="orch-helper">draws the figures and checks the statistics</span>
+          </div>
+          <div class="orch-loop">It keeps going until the analysis runs clean.</div>
+        </div>
       </div>
       <div class="orch-card">
-        <h4>07 · Interpretation & Writing</h4>
-        <pre>draft-agent
- ├─ section sub-agents
- ├─ consistency checker
- │     results ↔ claims
- ├─ [citation formatter]
- └─ [git] commit per revision
- ↻ redraft on critique</pre>
+        <h4>07 · Interpretation &amp; Writing</h4>
+        <p class="orch-ask">&ldquo;Turn these results into a draft.&rdquo;</p>
+        <div class="orch-flow">
+          <div class="orch-node">One assistant takes the request and splits it up</div>
+          <div class="orch-split">
+          <span class="orch-helper">drafts each section of the paper</span>
+          <span class="orch-helper">checks every claim against the actual results</span>
+          <span class="orch-helper">puts the citations into the right format</span>
+          </div>
+          <div class="orch-loop">Each round of criticism sends it back for another pass.</div>
+        </div>
       </div>
     </div>
     <div class="orch-legend">
-      <span>lead-agent · orchestrator</span>
-      <span>sub-agent · delegated task</span>
-      <span>[tool call] · external system</span>
-      <span>↻ · dynamic loop</span>
+      <span><i class="k-lead"></i>The assistant that takes your request</span>
+      <span><i class="k-help"></i>The helpers it hands the pieces to</span>
+      <span><i class="k-loop">&#8635;</i>It checks the work and goes around again</span>
     </div>
+    <p class="lede" style="margin-top:26px; max-width:720px;">What none of it does: decide whether the question was worth asking, or what the answer means. That stays with the researcher.</p>
   </div>
 </section>
 
