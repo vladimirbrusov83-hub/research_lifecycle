@@ -160,7 +160,6 @@ header.hero::before{
   margin-top:-330px;
   pointer-events:none;
   z-index:0;
-  filter:drop-shadow(0 0 26px rgba(63,208,198,0.18));
   mask-image:linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
   -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
 }
@@ -1918,8 +1917,8 @@ allChips.forEach(chip=>{
 </script>
 
 <script>
-/* hero: a slowly turning double helix. two strands, the way the page reads the work:
-   one cyan (the agent), one gold (the library), rungs holding them together. */
+/* hero: a slowly turning double helix, drawn per frame. decorative, in the page's
+   two accent hues; it pauses when the hero is off screen or the tab is hidden. */
 (function(){
   const A = document.getElementById('helixA');
   const B = document.getElementById('helixB');
