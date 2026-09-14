@@ -154,16 +154,17 @@ header.hero::before{
   mask-image:radial-gradient(ellipse 90% 80% at 50% 50%, #000 20%, transparent 78%);
   -webkit-mask-image:radial-gradient(ellipse 90% 80% at 50% 50%, #000 20%, transparent 78%);
 }
-.hero-ring{
-  position:absolute; right:-190px; top:50%;
-  width:620px; height:620px;
-  margin-top:-310px;
+.hero-helix{
+  position:absolute; right:-40px; top:50%;
+  width:440px; height:660px;
+  margin-top:-330px;
   pointer-events:none;
   z-index:0;
-  filter:drop-shadow(0 0 22px rgba(63,208,198,0.20));
+  filter:drop-shadow(0 0 26px rgba(63,208,198,0.18));
+  mask-image:linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
+  -webkit-mask-image:linear-gradient(180deg, transparent 0%, #000 14%, #000 86%, transparent 100%);
 }
-.hero-ring svg{width:100%; height:100%; animation:ringSpin 110s linear infinite;}
-@keyframes ringSpin{to{transform:rotate(360deg);}}
+.hero-helix svg{width:100%; height:100%; overflow:visible;}
 .hero .wrap{position:relative; z-index:1;}
 .hero-stats{
   display:flex; gap:38px; margin-top:44px; flex-wrap:wrap;
@@ -638,7 +639,7 @@ footer.closing .final{
 .reveal.in{opacity:1; transform:none;}
 @media (prefers-reduced-motion:reduce){
   .reveal{opacity:1 !important; transform:none !important; transition:none;}
-  .hero-ring svg{animation:none;}
+  .hero-helix{opacity:0.75;}
   .scroll-cue::after{animation:none;}
 }
 
@@ -729,7 +730,7 @@ footer.closing .final{
 .back-top:hover{border-color:var(--cyan); color:var(--cyan-deep); transform:translateY(-2px);}
 
 @media (max-width:1100px){
-  .hero-ring{display:none;}
+  .hero-helix{display:none;}
 }
 @media (max-width:860px){
   .three-col{grid-template-columns:1fr;}
@@ -767,7 +768,7 @@ footer.closing .final{
   .orch-card, .orch-node, .orch-helper, .orch-ask, .orch-loop, .col p, .col-detail li, .contested-card p, .floor-card p{color:#222 !important;}
   .col-researcher, .col-ai, .col-library{background:#f6f6f6 !important;}
   #lensToggle, #progress, .scroll-cue, .chevron, .col-more-cue,
-  .phase-controls, .curve-title .hint, .back-top, .hero-ring{display:none !important;}
+  .phase-controls, .curve-title .hint, .back-top, .hero-helix{display:none !important;}
   .phase-body, .col-detail{max-height:none !important;}
   .phase-card.filtered-out{display:block;}
   .reveal{opacity:1 !important; transform:none !important;}
@@ -922,7 +923,7 @@ footer.closing::before{
   mask-image:linear-gradient(180deg, transparent 0, #000 12%, #000 84%, transparent 100%);
   -webkit-mask-image:linear-gradient(180deg, transparent 0, #000 12%, #000 84%, transparent 100%);
 }
-/* a second, shorter specimen balancing the hero ring */
+/* a second, shorter specimen balancing the hero helix */
 #model::after{
   content:"";
   position:absolute;
@@ -952,12 +953,12 @@ footer.closing::before{
 <button id="lensToggle" onclick="toggleLens()"><span class="dot"></span><span id="lensLabel">Library lens: off</span></button>
 
 <header class="hero">
-  <div class="hero-ring hero-anim" style="animation-delay:.85s" aria-hidden="true">
-    <svg viewBox="0 0 620 620">
-      <circle cx="310" cy="310" r="280" fill="none" stroke="var(--rule)" stroke-width="1.2"/>
-      <circle cx="310" cy="310" r="280" fill="none" stroke="var(--gold)" stroke-width="9" stroke-linecap="round" stroke-dasharray="3 172.9" opacity="0.55"/>
-      <circle cx="310" cy="310" r="236" fill="none" stroke="var(--rule)" stroke-width="1" stroke-dasharray="2 7"/>
-      <circle cx="310" cy="310" r="192" fill="none" stroke="var(--cyan)" stroke-width="1.4" stroke-dasharray="60 1146" stroke-linecap="round" opacity="0.5"/>
+  <div class="hero-helix hero-anim" style="animation-delay:.85s" aria-hidden="true">
+    <svg viewBox="0 0 440 660" preserveAspectRatio="xMidYMid meet">
+      <g id="helixRungs" stroke="#b9c9d2" stroke-linecap="round"></g>
+      <path id="helixA" fill="none" stroke="var(--cyan)" stroke-width="2.6" stroke-linecap="round" opacity="0.85"/>
+      <path id="helixB" fill="none" stroke="var(--gold)" stroke-width="2.6" stroke-linecap="round" opacity="0.8"/>
+      <g id="helixDots"></g>
     </svg>
   </div>
   <div class="wrap">
@@ -1914,6 +1915,86 @@ allChips.forEach(chip=>{
   chip.setAttribute('tabindex','0');
   chip.setAttribute('role','button');
 });
+</script>
+
+<script>
+/* hero: a slowly turning double helix. two strands, the way the page reads the work:
+   one cyan (the agent), one gold (the library), rungs holding them together. */
+(function(){
+  const A = document.getElementById('helixA');
+  const B = document.getElementById('helixB');
+  const rungs = document.getElementById('helixRungs');
+  const dots = document.getElementById('helixDots');
+  if(!A || !B) return;
+
+  const CX = 220, AMP = 128, TOP = 40, BOT = 620;
+  const RUNGS = 24, TWIST = Math.PI * 5.2, STEPS = RUNGS * 5;
+  const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  const rungEls = [], dotEls = [];
+  for(let i=0;i<RUNGS;i++){
+    const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+    rungs.appendChild(l); rungEls.push(l);
+    const a = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    a.setAttribute('fill','var(--cyan)');
+    const b = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    b.setAttribute('fill','var(--gold)');
+    dots.appendChild(a); dots.appendChild(b); dotEls.push([a,b]);
+  }
+
+  function draw(t){
+    let da = '', db = '';
+    for(let i=0;i<=STEPS;i++){
+      const f = i/STEPS, y = TOP + f*(BOT-TOP), ph = t + f*TWIST;
+      const xa = CX + AMP*Math.sin(ph), xb = CX - AMP*Math.sin(ph);
+      da += (i?'L':'M') + xa.toFixed(1) + ' ' + y.toFixed(1);
+      db += (i?'L':'M') + xb.toFixed(1) + ' ' + y.toFixed(1);
+    }
+    A.setAttribute('d', da);
+    B.setAttribute('d', db);
+
+    for(let i=0;i<RUNGS;i++){
+      const f = (i+0.5)/RUNGS, y = TOP + f*(BOT-TOP), ph = t + f*TWIST;
+      const xa = CX + AMP*Math.sin(ph), xb = CX - AMP*Math.sin(ph);
+      const front = (Math.cos(ph)+1)/2;          /* 1 = cyan strand nearest the viewer */
+      const open = Math.abs(Math.sin(ph));        /* 1 = helix seen face-on */
+      const l = rungEls[i];
+      l.setAttribute('x1',xa.toFixed(1)); l.setAttribute('y1',y.toFixed(1));
+      l.setAttribute('x2',xb.toFixed(1)); l.setAttribute('y2',y.toFixed(1));
+      l.setAttribute('stroke-width',(0.9 + 1.0*open).toFixed(2));
+      l.setAttribute('opacity',(0.10 + 0.28*open).toFixed(3));
+      const [ca,cb] = dotEls[i];
+      ca.setAttribute('cx',xa.toFixed(1)); ca.setAttribute('cy',y.toFixed(1));
+      ca.setAttribute('r',(2.0 + 1.9*front).toFixed(2));
+      ca.setAttribute('opacity',(0.35 + 0.5*front).toFixed(3));
+      cb.setAttribute('cx',xb.toFixed(1)); cb.setAttribute('cy',y.toFixed(1));
+      cb.setAttribute('r',(2.0 + 1.9*(1-front)).toFixed(2));
+      cb.setAttribute('opacity',(0.35 + 0.5*(1-front)).toFixed(3));
+    }
+  }
+
+  if(reduced){ draw(0.9); return; }
+
+  let t = 0, last = performance.now(), visible = true, raf = null;
+  function frame(now){
+    const dt = Math.min(64, now - last); last = now;
+    t += dt * 0.00028;                            /* one full turn in roughly 22s */
+    draw(t);
+    raf = visible ? requestAnimationFrame(frame) : null;
+  }
+  raf = requestAnimationFrame(frame);
+
+  function setVisible(v){
+    if(v === visible) return;
+    visible = v;
+    if(v && !raf){ last = performance.now(); raf = requestAnimationFrame(frame); }
+  }
+  const hero = document.querySelector('header.hero');
+  if(hero && 'IntersectionObserver' in window){
+    new IntersectionObserver(es => setVisible(es[0].isIntersecting), {threshold:0}).observe(hero);
+  }
+  document.addEventListener('visibilitychange', () => setVisible(!document.hidden));
+})();
 </script>
 
 </body>
